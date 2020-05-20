@@ -1,5 +1,6 @@
 package com.checkskills.qcm.security.service;
 
+import com.checkskills.qcm.model.Qcm;
 import com.checkskills.qcm.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,6 +22,7 @@ public class UserPrinciple implements UserDetails {
     private String username;
 
     private String email;
+
 
     @JsonIgnore
     private String password;
@@ -64,6 +66,7 @@ public class UserPrinciple implements UserDetails {
     public String getEmail() {
         return email;
     }
+
 
     @Override
     public String getUsername() {

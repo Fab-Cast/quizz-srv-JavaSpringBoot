@@ -18,14 +18,16 @@ public class Qcm {
     private String title;
     private int note;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    //@JsonBackReference
+    //@JsonManagedReference
+    private User user;
+
     @OneToMany(mappedBy = "qcm", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    //@OneToMany(cascade = {CascadeType.MERGE}) // Cascade : permet d'enregistrer les enfants (QuestionList et AnswerList) lors du SAVE de Qcm
-    //@JoinColumn(name = "qcm_id") // Permet de lier les objets enfants dans le json retourné
     @JsonManagedReference // Résoud le pb infinite recursive (objets dupliqués à l'infini dans la réponse)
     private List<Question> questionList;
-
-    // constructor
 
 
 
@@ -62,4 +64,11 @@ public class Qcm {
 
     public void setQuestionList(List<Question> questionList) { this.questionList = questionList; }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
