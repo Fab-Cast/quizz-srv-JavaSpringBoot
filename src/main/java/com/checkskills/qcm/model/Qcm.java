@@ -20,8 +20,6 @@ public class Qcm {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    //@JsonBackReference
-    //@JsonManagedReference
     private User user;
 
     @OneToMany(mappedBy = "qcm", fetch = FetchType.LAZY,
@@ -29,10 +27,13 @@ public class Qcm {
     @JsonManagedReference // Résoud le pb infinite recursive (objets dupliqués à l'infini dans la réponse)
     private List<Question> questionList;
 
+    @OneToMany(mappedBy = "qcm", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<QcmHistory> qcmHistoryList;
 
 
-
-    // getters & setters
+// getters & setters
 
     public Long getId() {
         return id;
@@ -58,17 +59,27 @@ public class Qcm {
         this.note = note;
     }
 
-    public List<Question> getQuestionList() {
-        return questionList;
-    }
-
-    public void setQuestionList(List<Question> questionList) { this.questionList = questionList; }
-
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Question> getQuestionList() {
+        return questionList;
+    }
+
+    public void setQuestionList(List<Question> questionList) {
+        this.questionList = questionList;
+    }
+
+    public List<QcmHistory> getQcmHistoryList() {
+        return qcmHistoryList;
+    }
+
+    public void setQcmHistoryList(List<QcmHistory> qcmHistoryList) {
+        this.qcmHistoryList = qcmHistoryList;
     }
 }
