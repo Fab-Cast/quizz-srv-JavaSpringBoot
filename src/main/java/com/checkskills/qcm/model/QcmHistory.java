@@ -23,11 +23,7 @@ public class QcmHistory {
     @JoinColumn(name = "employer_id")
     private User employer;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    private int note;
+    private int success;
 
     @Column(name = "date_used")
     private Date dateUsed;
@@ -37,6 +33,7 @@ public class QcmHistory {
 
     @Enumerated(EnumType.STRING)
     private QcmHistoryStatus status;
+
 
 
     public QcmHistoryStatus getStatus() {
@@ -71,20 +68,12 @@ public class QcmHistory {
         this.employer = employer;
     }
 
-    public User getUser() {
-        return user;
+    public int getSuccess() {
+        return success;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public int getNote() {
-        return note;
-    }
-
-    public void setNote(int note) {
-        this.note = note;
+    public void setSuccess(int success) {
+        this.success = success;
     }
 
     public Date getDateUsed() {

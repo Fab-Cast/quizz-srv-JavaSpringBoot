@@ -1,11 +1,9 @@
 package com.checkskills.qcm.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "qcm")
@@ -17,6 +15,7 @@ public class Qcm {
 
     private String title;
     private int note;
+    private Long price;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -32,8 +31,34 @@ public class Qcm {
     @JsonManagedReference
     private List<QcmHistory> qcmHistoryList;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "qcm_sector",
+            joinColumns = @JoinColumn(name = "qcm_id"),
+            inverseJoinColumns = @JoinColumn(name = "sector_id"))
+    private List<Sector> sectors;
+
+    @Enumerated(EnumType.STRING)
+    private QcmDifficulty difficulty;
+
 
 // getters & setters
+
+
+    public QcmDifficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(QcmDifficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public Long getPrice() { return price; }
+
+    public void setPrice(Long price) { this.price = price; }
+
+    public List<Sector> getSectors() { return sectors; }
+
+    public void setSectors(List<Sector> sectors) { this.sectors = sectors; }
 
     public Long getId() {
         return id;

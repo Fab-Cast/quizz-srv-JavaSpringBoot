@@ -1,22 +1,45 @@
 package com.checkskills.qcm.model.custom;
 
+import com.checkskills.qcm.model.Sector;
+
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "qcm")
 public class QcmLite {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private int note;
+    private Long price;
 
-
-    // Constructor
-
-    public QcmLite(Long id, String title, int note) {
-        this.id = id;
-        this.title = title;
-        this.note = note;
-    }
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "qcm_sector",
+            joinColumns = @JoinColumn(name = "qcm_id"),
+            inverseJoinColumns = @JoinColumn(name = "sector_id"))
+    private List<Sector> sectors;
 
 
     // Getters & Setters
+
+    public Long getPrice() {
+        return price;
+    }
+
+    public void setPrice(Long price) {
+        this.price = price;
+    }
+
+    public List<Sector> getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(List<Sector> sectors) {
+        this.sectors = sectors;
+    }
 
     public Long getId() {
         return id;

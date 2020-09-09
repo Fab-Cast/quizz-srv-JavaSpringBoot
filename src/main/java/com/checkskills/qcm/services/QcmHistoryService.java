@@ -20,17 +20,16 @@ public class QcmHistoryService {
     @Autowired
     private QcmHistoryRepository qcmHistoryRepository;
 
-    public ResponseEntity saveQcmHistory(User user, Qcm qcm, int totalWrong) {
+    public ResponseEntity saveQcmHistory(Qcm qcm, int totalWrong) {
 
         QcmHistory qcmHistory = new QcmHistory();
 
-        qcmHistory.setUser(user);
         qcmHistory.setQcm(qcm);
         qcmHistory.setDateUsed(new Date());
         qcmHistory.setStatus(QcmHistoryStatus.COMPLETE);
 
-        int note = 10 - (totalWrong * 10 / qcm.getQuestionList().size());
-        qcmHistory.setNote(note);
+        int success = 100 - (totalWrong * 100 / qcm.getQuestionList().size());
+        qcmHistory.setSuccess(success);
 
         return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryRepository.save(qcmHistory));
     }

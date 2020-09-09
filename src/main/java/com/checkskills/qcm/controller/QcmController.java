@@ -31,10 +31,16 @@ public class QcmController {
     @Autowired
     AuthenticationManager authenticationManager;
 
-    @GetMapping("/qcm")
+    @GetMapping("/qcmLite")
     public ResponseEntity getAllQcmLite(){
         List<QcmLite> qcmLiteList = qcmService.findAllQcmLite();
         return ResponseEntity.status(HttpStatus.OK).body(qcmLiteList);
+    }
+
+    @GetMapping("/qcm")
+    public ResponseEntity getAllQcm(){
+        List<Qcm> qcmList = qcmService.findAllQcm();
+        return ResponseEntity.status(HttpStatus.OK).body(qcmList);
     }
 
     @GetMapping("/qcm/{id}")
@@ -54,10 +60,9 @@ public class QcmController {
     }
 
     @PostMapping("/qcm/{qcmId}")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity verifyQcm(@RequestBody Qcm qcm, @PathVariable(value = "qcmId") Long qcmId, Authentication authentication){
-        User user = userRepository.findByUsername(authentication.getName());
-        return ResponseEntity.status(HttpStatus.OK).body( qcmService.verifyQcm(user, qcm, qcmId));
+        //User user = userRepository.findByUsername(authentication.getName());
+        return ResponseEntity.status(HttpStatus.OK).body( qcmService.verifyQcm(qcm, qcmId));
     }
 
     @PutMapping("/qcm/{id}")

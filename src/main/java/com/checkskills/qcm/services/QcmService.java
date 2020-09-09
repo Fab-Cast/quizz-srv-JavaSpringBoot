@@ -5,6 +5,7 @@ import com.checkskills.qcm.model.custom.QcmLite;
 import com.checkskills.qcm.repository.QcmHistoryRepository;
 import com.checkskills.qcm.repository.QcmRepository;
 import com.checkskills.qcm.repository.QuestionRepository;
+import com.checkskills.qcm.repository.custom.QcmLiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ public class QcmService {
     private QcmRepository qcmRepository;
 
     @Autowired
+    private QcmLiteRepository qcmLiteRepository;
+
+    @Autowired
     private QuestionRepository questionRepository;
 
     @Autowired
@@ -36,7 +40,11 @@ public class QcmService {
     }
 
     public List<QcmLite> findAllQcmLite() {
-        return qcmRepository.findAllQcmLite();
+        return qcmLiteRepository.findAll();
+    }
+
+    public List<Qcm> findAllQcm() {
+        return qcmRepository.findAll();
     }
 
     public Qcm getQcmById(Long id, User user) {
@@ -105,11 +113,12 @@ public class QcmService {
 
     }
 
-    public ResponseEntity verifyQcm(User user, Qcm qcm, Long qcmId) {
+    public ResponseEntity verifyQcm(Qcm qcm, Long qcmId) {
 
         int totalWrong = 0;
 
         Optional<Qcm> optionalQcm = qcmRepository.findById(qcmId);
+
         if (optionalQcm.isPresent()){
             Qcm dbQcm = optionalQcm.get();
             List<Answer> answerList = new ArrayList<Answer>();
@@ -144,7 +153,7 @@ public class QcmService {
                 questionRepository.save(dbQuestion);
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryService.saveQcmHistory(user, dbQcm, totalWrong));
+            return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryService.saveQcmHistory(dbQcm, totalWrong));
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("QCM pas trouvé");
