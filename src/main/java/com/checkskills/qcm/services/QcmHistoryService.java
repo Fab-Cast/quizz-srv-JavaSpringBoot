@@ -20,10 +20,11 @@ public class QcmHistoryService {
     @Autowired
     private QcmHistoryRepository qcmHistoryRepository;
 
-    public ResponseEntity saveQcmHistory(Qcm qcm, int totalWrong) {
+    public ResponseEntity saveQcmHistory(Qcm qcm, int totalWrong, String code) {
 
         QcmHistory qcmHistory = new QcmHistory();
 
+        qcmHistory.setCode(code);
         qcmHistory.setQcm(qcm);
         qcmHistory.setDateUsed(new Date());
         qcmHistory.setStatus(QcmHistoryStatus.COMPLETE);

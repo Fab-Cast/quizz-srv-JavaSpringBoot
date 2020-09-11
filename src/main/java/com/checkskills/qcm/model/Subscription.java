@@ -1,6 +1,9 @@
 package com.checkskills.qcm.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "subscription")
@@ -13,6 +16,7 @@ public class Subscription {
     @ManyToOne
     @JoinColumn(name = "plan_id")
     private Plan plan;
+
 
     @ManyToOne
     @JoinColumn(name = "employer_id")

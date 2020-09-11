@@ -113,11 +113,11 @@ public class QcmService {
 
     }
 
-    public ResponseEntity verifyQcm(Qcm qcm, Long qcmId) {
+    public ResponseEntity verifyQcm(Qcm qcm, String code) {
 
         int totalWrong = 0;
 
-        Optional<Qcm> optionalQcm = qcmRepository.findById(qcmId);
+        Optional<Qcm> optionalQcm = qcmRepository.findById(qcm.getId());
 
         if (optionalQcm.isPresent()){
             Qcm dbQcm = optionalQcm.get();
@@ -153,7 +153,7 @@ public class QcmService {
                 questionRepository.save(dbQuestion);
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryService.saveQcmHistory(dbQcm, totalWrong));
+            return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryService.saveQcmHistory(dbQcm, totalWrong, code));
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("QCM pas trouvé");

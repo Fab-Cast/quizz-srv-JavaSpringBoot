@@ -59,10 +59,9 @@ public class QcmController {
         return ResponseEntity.status(HttpStatus.OK).body(qcmSaved);
     }
 
-    @PostMapping("/qcm/{qcmId}")
-    public ResponseEntity verifyQcm(@RequestBody Qcm qcm, @PathVariable(value = "qcmId") Long qcmId, Authentication authentication){
-        //User user = userRepository.findByUsername(authentication.getName());
-        return ResponseEntity.status(HttpStatus.OK).body( qcmService.verifyQcm(qcm, qcmId));
+    @PostMapping("/qcm/complete/{code}")
+    public ResponseEntity verifyQcm(@RequestBody Qcm qcm, @PathVariable(value = "code") String code){
+        return ResponseEntity.status(HttpStatus.OK).body( qcmService.verifyQcm(qcm, code));
     }
 
     @PutMapping("/qcm/{id}")

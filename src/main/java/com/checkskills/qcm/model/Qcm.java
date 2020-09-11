@@ -14,8 +14,9 @@ public class Qcm {
     private Long id;
 
     private String title;
+    private String description;
     private int note;
-    private Long price;
+    private Long credits;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -52,9 +53,9 @@ public class Qcm {
         this.difficulty = difficulty;
     }
 
-    public Long getPrice() { return price; }
+    public Long getCredits() { return credits; }
 
-    public void setPrice(Long price) { this.price = price; }
+    public void setCredits(Long credits) { this.credits = credits; }
 
     public List<Sector> getSectors() { return sectors; }
 
@@ -75,6 +76,10 @@ public class Qcm {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String getDescription() { return description; }
+
+    public void setDescription(String description) { this.description = description; }
 
     public int getNote() {
         return note;

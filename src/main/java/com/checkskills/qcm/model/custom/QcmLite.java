@@ -13,8 +13,9 @@ public class QcmLite {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    private String description;
     private int note;
-    private Long price;
+    private Long credits;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "qcm_sector",
@@ -25,21 +26,6 @@ public class QcmLite {
 
     // Getters & Setters
 
-    public Long getPrice() {
-        return price;
-    }
-
-    public void setPrice(Long price) {
-        this.price = price;
-    }
-
-    public List<Sector> getSectors() {
-        return sectors;
-    }
-
-    public void setSectors(List<Sector> sectors) {
-        this.sectors = sectors;
-    }
 
     public Long getId() {
         return id;
@@ -57,11 +43,35 @@ public class QcmLite {
         this.title = title;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getNote() {
         return note;
     }
 
     public void setNote(int note) {
         this.note = note;
+    }
+
+    public Long getCredits() {
+        return credits;
+    }
+
+    public void setCredits(Long credits) {
+        this.credits = credits;
+    }
+
+    public List<Sector> getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(List<Sector> sectors) {
+        this.sectors = sectors;
     }
 }

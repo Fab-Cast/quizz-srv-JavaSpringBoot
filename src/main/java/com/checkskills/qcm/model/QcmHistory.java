@@ -34,7 +34,18 @@ public class QcmHistory {
     @Enumerated(EnumType.STRING)
     private QcmHistoryStatus status;
 
+    private String code;
 
+
+
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public QcmHistoryStatus getStatus() {
         return status;
