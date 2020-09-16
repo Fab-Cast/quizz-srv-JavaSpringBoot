@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class QcmController {
 
     private static final Logger LOGGER= LoggerFactory.getLogger(QcmController.class);

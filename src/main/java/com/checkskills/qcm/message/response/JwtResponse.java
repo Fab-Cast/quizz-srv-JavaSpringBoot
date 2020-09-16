@@ -3,9 +3,11 @@ package com.checkskills.qcm.message.response;
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
+    private Long userId;
 
-    public JwtResponse(String accessToken) {
+    public JwtResponse(String accessToken, Long userId) {
         this.token = accessToken;
+        this.userId = userId;
     }
 
     public String getAccessToken() {
@@ -22,5 +24,13 @@ public class JwtResponse {
 
     public void setTokenType(String tokenType) {
         this.type = tokenType;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }
