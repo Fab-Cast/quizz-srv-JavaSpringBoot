@@ -23,13 +23,11 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/current-auth/")
     @PreAuthorize("hasRole('EMPLOYER') or hasRole('AUTHOR') or hasRole('ADMIN')")
-    public ResponseEntity getUserById(@PathVariable(value = "id") Long id) {
-
-        Optional<User> user = userRepository.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(user.get());
-
+    public ResponseEntity getCurrentAuthUser(Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName());
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
 }

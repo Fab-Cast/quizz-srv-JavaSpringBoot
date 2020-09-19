@@ -11,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PurchaseService {
@@ -28,53 +25,46 @@ public class PurchaseService {
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    private SubscriptionService subscriptionService;
+
 
     @Autowired
     private QcmHistoryRepository qcmHistoryRepository;
 
     public ResponseEntity<?> purchaseQcm(Long qcmId, User user) {
 
-        System.out.println("-------------------------------111");
         Qcm qcm = qcmService.getQcmById(qcmId, user);
-        // vérifier que l'utilisateur ait assez de crédit
 
-        //List<> monthlyCredit = subscriptionRepository.totalCredit(user.getId()) >= qcm.getPrice())
-        System.out.println("-------------------------------222");
         // si l'utilisateur a plus de crédits que le coût du qcm (si il peut se le payer)
         if(subscriptionRepository.totalCredit(user.getId()) >= qcm.getCredits()){
-            System.out.println("-------------------------------333");
 
-            List<UserSubscriptionList> userSubscriptionList = subscriptionRepository.findAllUserSubscriptions(user.getId());
-            int paid = 0;
-            System.out.println("-------------------------------AAA");
-            userSubscriptionList.forEach(sub ->{
-                System.out.println("-------------------------------BBB");
-                    if(sub.getCredits_used() > 0){
-                        System.out.println("-------------------------------CCC");
-                    }
+            List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
+            Long toPay;
+            toPay = qcm.getCredits();
+
+            for (int i = 0; i < userSubscriptionList.size(); i++) {
+                UserSubscriptionList sub = userSubscriptionList.get(i);
+                Long dispo = sub.getPlan_credits() - sub.getCredits_used();
+
+                Optional<Subscription> obtionalSubToSave = subscriptionRepository.findById(sub.getId());
+                Subscription subToSave = obtionalSubToSave.get();
+
+                if(qcm.getCredits()<= dispo){
+                    subscriptionRepository.save(subToSave);
+                    break;
+                }else{
+                    toPay = qcm.getCredits() - (sub.getPlan_credits() - sub.getCredits_used());
+                    subToSave.setCredits_used(sub.getPlan_credits()); // tout est consommé sur ce sub
+                    subscriptionRepository.save(subToSave);
                 }
-            );
-
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(userSubscriptionList);
         }else{
             return ResponseEntity.status(HttpStatus.OK).body("T'as plus de tunes vieux, faut passer à la caisse");
         }
 
-
-        /*
-        // enregistrer le nouveau QCM_History avec un code unique
-        QcmHistory qcmHistory = new QcmHistory();
-        qcmHistory.setQcm(qcm);
-        qcmHistory.setStatus(QcmHistoryStatus.UNUSED);
-        qcmHistory.setDateBought(new Date());
-        qcmHistory.setEmployer(user);
-
-        qcmHistory.setCode(UUID.randomUUID().toString());
-
-        return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryRepository.save(qcmHistory));
-
-         */
 
 
     }

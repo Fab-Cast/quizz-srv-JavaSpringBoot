@@ -21,4 +21,15 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query(value = "SELECT subscription.id, subscription.plan_id, subscription.employer_id, subscription.credits_used, plan.credits as plan_credits FROM checkskills.subscription LEFT JOIN plan ON subscription.plan_id = plan.id WHERE employer_id = :employer_id AND (plan.credits - subscription.credits_used > 0) ORDER BY FIELD(plan.type, 'monthly', 'oneshot'), credits_used DESC", nativeQuery = true)
     List<UserSubscriptionList> findAllUserSubscriptions(@Param("employer_id") Long employer_id);
 
+
+    public interface UserSubscriptionList {
+
+        Long getId();
+        Long getPlan_id();
+        Long getEmployer_id();
+        Long getCredits_used();
+        Long getPlan_credits();
+
+    }
+
 }

@@ -40,7 +40,7 @@ public class QcmService {
     }
 
     public List<QcmLite> findAllQcmLite() {
-        return qcmLiteRepository.findAll();
+        return qcmLiteRepository.findByVisible(true);
     }
 
     public List<Qcm> findAllQcm() {
@@ -77,7 +77,8 @@ public class QcmService {
 
         try {
             qcmRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.OK).body("QCM Supprimé");
+            return ResponseEntity.status(HttpStatus.OK).body(qcmDbUserId);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("QCM introuvable");
         }

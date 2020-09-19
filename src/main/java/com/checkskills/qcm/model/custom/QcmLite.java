@@ -16,6 +16,7 @@ public class QcmLite {
     private String description;
     private int note;
     private Long credits;
+    private boolean visible;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "qcm_sector",
@@ -26,6 +27,14 @@ public class QcmLite {
 
     // Getters & Setters
 
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 
     public Long getId() {
         return id;

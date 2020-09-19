@@ -2,6 +2,7 @@ package com.checkskills.qcm.controller;
 
 import com.checkskills.qcm.model.*;
 import com.checkskills.qcm.model.custom.QcmLite;
+import com.checkskills.qcm.repository.QcmRepository;
 import com.checkskills.qcm.repository.UserRepository;
 import com.checkskills.qcm.services.QcmService;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -28,6 +30,9 @@ public class QcmController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private QcmRepository qcmRepository;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -50,6 +55,14 @@ public class QcmController {
         User user = userRepository.findByUsername(authentication.getName());
         Qcm qcm = qcmService.getQcmById(id,user);
         return ResponseEntity.status(HttpStatus.OK).body(qcm);
+    }
+
+    @GetMapping("/qcm/current-auth")
+    @PreAuthorize("hasRole('USER') or hasRole('AUTHOR')")
+    public ResponseEntity getCurrentAuthQcmList(Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName());
+        List<Qcm> qcmList = qcmRepository.findAllByUser(user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(qcmList);
     }
 
     @PostMapping("/qcm")

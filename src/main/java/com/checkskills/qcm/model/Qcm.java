@@ -17,6 +17,7 @@ public class Qcm {
     private String description;
     private int note;
     private Long credits;
+    private boolean visible;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -44,6 +45,14 @@ public class Qcm {
 
 // getters & setters
 
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 
     public QcmDifficulty getDifficulty() {
         return difficulty;
