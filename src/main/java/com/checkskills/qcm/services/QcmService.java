@@ -71,6 +71,7 @@ public class QcmService {
         Long authUserId = user.getId();
         Long qcmDbUserId = qcmRepository.findById(id).get().getUser().getId();
 
+        
         if(authUserId != qcmDbUserId){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le propriétaire de ce QCM est différent de l'utilisateur authentifié");
         }

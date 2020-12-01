@@ -1,5 +1,6 @@
 package com.checkskills.qcm.repository;
 
+import com.checkskills.qcm.model.Answer;
 import com.checkskills.qcm.model.Plan;
 import com.checkskills.qcm.model.Subscription;
 import com.checkskills.qcm.model.custom.UserSubscriptionList;
@@ -23,13 +24,13 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
 
     public interface UserSubscriptionList {
-
         Long getId();
         Long getPlan_id();
         Long getEmployer_id();
         Long getCredits_used();
         Long getPlan_credits();
-
     }
+
+    List<Subscription> findByUserId(Long userId);
 
 }

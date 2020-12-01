@@ -14,7 +14,6 @@ public class Sector {
 
     private String title;
 
-
     public Long getId() {
         return id;
     }

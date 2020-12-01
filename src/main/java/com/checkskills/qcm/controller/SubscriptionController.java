@@ -1,9 +1,11 @@
 package com.checkskills.qcm.controller;
 
 import com.checkskills.qcm.model.Plan;
+import com.checkskills.qcm.model.Qcm;
 import com.checkskills.qcm.model.Subscription;
 import com.checkskills.qcm.model.User;
 import com.checkskills.qcm.repository.PlanRepository;
+import com.checkskills.qcm.repository.SubscriptionRepository;
 import com.checkskills.qcm.repository.UserRepository;
 import com.checkskills.qcm.services.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api")
 public class SubscriptionController {
 
     @Autowired
@@ -26,11 +29,22 @@ public class SubscriptionController {
     private UserRepository userRepository;
 
     @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
     private PlanRepository planRepository;
 
     @GetMapping("/subscription")
     public ResponseEntity getAllSubscription(){
         List<Subscription> subscriptionList = subscriptionService.findAllSubscription();
+        return ResponseEntity.status(HttpStatus.OK).body(subscriptionList);
+    }
+
+    @GetMapping("/subscription/current-auth")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity getCurrentAuthSubscriptionList(Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName());
+        List<Subscription> subscriptionList = subscriptionRepository.findByUserId(user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(subscriptionList);
     }
 

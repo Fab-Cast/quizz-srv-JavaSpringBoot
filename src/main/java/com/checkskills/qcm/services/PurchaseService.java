@@ -40,6 +40,7 @@ public class PurchaseService {
         if(subscriptionRepository.totalCredit(user.getId()) >= qcm.getCredits()){
 
             List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
+
             Long toPay;
             toPay = qcm.getCredits();
 
@@ -51,6 +52,7 @@ public class PurchaseService {
                 Subscription subToSave = obtionalSubToSave.get();
 
                 if(qcm.getCredits()<= dispo){
+                    subToSave.setCredits_used(subToSave.getCredits_used() + toPay);
                     subscriptionRepository.save(subToSave);
                     break;
                 }else{

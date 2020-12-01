@@ -37,7 +37,7 @@ public class Qcm {
     @JoinTable(name = "qcm_sector",
             joinColumns = @JoinColumn(name = "qcm_id"),
             inverseJoinColumns = @JoinColumn(name = "sector_id"))
-    private List<Sector> sectors;
+    private List<Sector> sectorList;
 
     @Enumerated(EnumType.STRING)
     private QcmDifficulty difficulty;
@@ -66,9 +66,13 @@ public class Qcm {
 
     public void setCredits(Long credits) { this.credits = credits; }
 
-    public List<Sector> getSectors() { return sectors; }
+    public List<Sector> getSectorList() {
+        return sectorList;
+    }
 
-    public void setSectors(List<Sector> sectors) { this.sectors = sectors; }
+    public void setSectorList(List<Sector> sectorList) {
+        this.sectorList = sectorList;
+    }
 
     public Long getId() {
         return id;

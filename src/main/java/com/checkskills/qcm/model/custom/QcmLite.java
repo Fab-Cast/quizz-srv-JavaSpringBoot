@@ -18,23 +18,18 @@ public class QcmLite {
     private Long credits;
     private boolean visible;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserLite user;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "qcm_sector",
             joinColumns = @JoinColumn(name = "qcm_id"),
             inverseJoinColumns = @JoinColumn(name = "sector_id"))
-    private List<Sector> sectors;
+    private List<Sector> sectorList;
 
 
     // Getters & Setters
-
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
 
     public Long getId() {
         return id;
@@ -76,11 +71,27 @@ public class QcmLite {
         this.credits = credits;
     }
 
-    public List<Sector> getSectors() {
-        return sectors;
+    public boolean isVisible() {
+        return visible;
     }
 
-    public void setSectors(List<Sector> sectors) {
-        this.sectors = sectors;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public UserLite getUser() {
+        return user;
+    }
+
+    public void setUser(UserLite user) {
+        this.user = user;
+    }
+
+    public List<Sector> getSectorList() {
+        return sectorList;
+    }
+
+    public void setSectorList(List<Sector> sectorList) {
+        this.sectorList = sectorList;
     }
 }
