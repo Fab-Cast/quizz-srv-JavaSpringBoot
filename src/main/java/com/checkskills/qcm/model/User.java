@@ -52,6 +52,8 @@ public class User{
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    // @Lob // LOB is datatype for storing large object data
+    private byte[] picture;
 
     public User() {}
 
@@ -111,5 +113,11 @@ public class User{
         this.roles = roles;
     }
 
+    public byte[] getPicture() {
+        return picture;
+    }
 
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
+    }
 }

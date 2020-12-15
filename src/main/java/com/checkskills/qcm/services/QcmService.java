@@ -43,6 +43,8 @@ public class QcmService {
         return qcmLiteRepository.findByVisible(true);
     }
 
+    public Optional<QcmLite> findQcmLite(Long id) {return qcmLiteRepository.findById(id); }
+
     public List<Qcm> findAllQcm() {
         return qcmRepository.findAll();
     }
@@ -155,7 +157,7 @@ public class QcmService {
                 questionRepository.save(dbQuestion);
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryService.saveQcmHistory(dbQcm, totalWrong, code));
+            return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryService.saveCompletedQcm(dbQcm, totalWrong, code));
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("QCM pas trouvé");

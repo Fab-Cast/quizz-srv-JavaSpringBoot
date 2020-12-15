@@ -1,6 +1,7 @@
 package com.checkskills.qcm.repository;
 
 import com.checkskills.qcm.model.Qcm;
+import com.checkskills.qcm.model.custom.QcmLite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,5 +18,8 @@ public interface QcmRepository extends JpaRepository<Qcm, Long> {
 
     @Query(value = "SELECT * FROM qcm q WHERE q.user_id = ?1", nativeQuery = true)
     List<Qcm> findAllByUser(Long userId);
+
+    @Query(value = "SELECT qcm FROM qcm q WHERE q.id = ?1 LIMIT 1", nativeQuery = true)
+    QcmLite findQcmLiteById(Long qcmId);
 
 }

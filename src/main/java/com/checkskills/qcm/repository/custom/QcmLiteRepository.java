@@ -1,6 +1,7 @@
 package com.checkskills.qcm.repository.custom;
 
 import com.checkskills.qcm.model.Qcm;
+import com.checkskills.qcm.model.User;
 import com.checkskills.qcm.model.custom.QcmLite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

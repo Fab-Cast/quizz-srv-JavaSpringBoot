@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class QcmHistoryService {
@@ -20,7 +21,7 @@ public class QcmHistoryService {
     @Autowired
     private QcmHistoryRepository qcmHistoryRepository;
 
-    public ResponseEntity saveQcmHistory(Qcm qcm, int totalWrong, String code) {
+    public ResponseEntity saveCompletedQcm(Qcm qcm, int totalWrong, String code) {
 
         QcmHistory qcmHistory = new QcmHistory();
 
@@ -34,4 +35,21 @@ public class QcmHistoryService {
 
         return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryRepository.save(qcmHistory));
     }
+
+    public ResponseEntity savePurchasedQcm(Qcm qcm, User user) {
+
+        String uniqueID = UUID.randomUUID().toString();
+
+        QcmHistory qcmHistory = new QcmHistory();
+
+        qcmHistory.setCode(uniqueID);
+        qcmHistory.setQcm(qcm);
+        qcmHistory.setEmployer(user);
+        qcmHistory.setDateBought(new Date());
+        qcmHistory.setStatus(QcmHistoryStatus.UNUSED);
+
+        return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryRepository.save(qcmHistory));
+    }
+
+
 }

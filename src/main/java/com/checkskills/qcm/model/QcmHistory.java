@@ -1,6 +1,7 @@
 package com.checkskills.qcm.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -14,9 +15,9 @@ public class QcmHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "qcm_id")
-    @JsonBackReference
+    @JsonManagedReference
     private Qcm qcm;
 
     @OneToOne

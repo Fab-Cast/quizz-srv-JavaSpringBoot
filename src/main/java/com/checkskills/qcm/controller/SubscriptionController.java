@@ -59,7 +59,7 @@ public class SubscriptionController {
         Subscription sub = new Subscription();
         sub.setUser(user);
         sub.setPlan(plan.get());
-        sub.setCredits_used(null);
+        sub.setCredits_used((long) 0);
 
         Subscription subscriptionSaved = subscriptionService.saveSubscription(user, sub);
         return ResponseEntity.status(HttpStatus.OK).body(sub);

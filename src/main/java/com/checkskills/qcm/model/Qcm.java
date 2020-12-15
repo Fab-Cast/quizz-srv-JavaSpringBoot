@@ -28,11 +28,6 @@ public class Qcm {
     @JsonManagedReference // Résoud le pb infinite recursive (objets dupliqués à l'infini dans la réponse)
     private List<Question> questionList;
 
-    @OneToMany(mappedBy = "qcm", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<QcmHistory> qcmHistoryList;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "qcm_sector",
             joinColumns = @JoinColumn(name = "qcm_id"),
@@ -118,11 +113,4 @@ public class Qcm {
         this.questionList = questionList;
     }
 
-    public List<QcmHistory> getQcmHistoryList() {
-        return qcmHistoryList;
-    }
-
-    public void setQcmHistoryList(List<QcmHistory> qcmHistoryList) {
-        this.qcmHistoryList = qcmHistoryList;
-    }
 }

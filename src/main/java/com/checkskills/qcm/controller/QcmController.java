@@ -2,9 +2,11 @@ package com.checkskills.qcm.controller;
 
 import com.checkskills.qcm.model.*;
 import com.checkskills.qcm.model.custom.QcmLite;
+import com.checkskills.qcm.repository.QcmHistoryRepository;
 import com.checkskills.qcm.repository.QcmRepository;
 import com.checkskills.qcm.repository.UserRepository;
 import com.checkskills.qcm.services.QcmService;
+import org.hibernate.mapping.Any;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +37,21 @@ public class QcmController {
     private QcmRepository qcmRepository;
 
     @Autowired
+    private QcmHistoryRepository qcmHistoryRepository;
+
+    @Autowired
     AuthenticationManager authenticationManager;
 
     @GetMapping("/qcmLite")
     public ResponseEntity getAllQcmLite(){
         List<QcmLite> qcmLiteList = qcmService.findAllQcmLite();
         return ResponseEntity.status(HttpStatus.OK).body(qcmLiteList);
+    }
+
+    @GetMapping("/qcmLite/{id}")
+    public ResponseEntity getQcmLiteById(@PathVariable(value = "id") Long id) {
+        Optional<QcmLite> qcmLite = qcmService.findQcmLite(id);
+        return ResponseEntity.status(HttpStatus.OK).body(qcmLite);
     }
 
     @GetMapping("/qcm")
@@ -63,6 +74,13 @@ public class QcmController {
         User user = userRepository.findByUsername(authentication.getName());
         List<Qcm> qcmList = qcmRepository.findAllByUser(user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(qcmList);
+    }
+
+    @GetMapping("/qcmLite/ordered")
+    public ResponseEntity getOrderedQcmList(Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName());
+        List<QcmHistoryRepository.QcmHistoryOrder> qcmLiteList = qcmHistoryRepository.findQcmHistoryOrder(user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(qcmLiteList);
     }
 
     @PostMapping("/qcm")

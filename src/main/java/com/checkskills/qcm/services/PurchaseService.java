@@ -28,6 +28,9 @@ public class PurchaseService {
     @Autowired
     private SubscriptionService subscriptionService;
 
+    @Autowired
+    private QcmHistoryService qcmHistoryService;
+
 
     @Autowired
     private QcmHistoryRepository qcmHistoryRepository;
@@ -62,9 +65,11 @@ public class PurchaseService {
                 }
             }
 
+            qcmHistoryService.savePurchasedQcm(qcm, user);
+
             return ResponseEntity.status(HttpStatus.OK).body(userSubscriptionList);
         }else{
-            return ResponseEntity.status(HttpStatus.OK).body("T'as plus de tunes vieux, faut passer à la caisse");
+            return ResponseEntity.status(HttpStatus.LOCKED).body("insufficient credit");
         }
 
 

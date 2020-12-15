@@ -25,7 +25,6 @@ public class SubscriptionService {
 
     public Subscription saveSubscription(User user, Subscription subscription) {
         subscription.setUser(user);
-        // todo La valeur par défaut de credits_used est à null, j'ai besoin qu'elle soit à 0 en bdd
         return subscriptionRepository.save(subscription);
     }
 
