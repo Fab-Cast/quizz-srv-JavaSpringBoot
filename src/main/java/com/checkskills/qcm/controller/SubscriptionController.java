@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +61,7 @@ public class SubscriptionController {
         sub.setUser(user);
         sub.setPlan(plan.get());
         sub.setCredits_used((long) 0);
+        sub.setDateBought(new Date());
 
         Subscription subscriptionSaved = subscriptionService.saveSubscription(user, sub);
         return ResponseEntity.status(HttpStatus.OK).body(sub);

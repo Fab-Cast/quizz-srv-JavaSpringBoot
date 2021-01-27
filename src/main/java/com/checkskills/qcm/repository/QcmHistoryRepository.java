@@ -1,6 +1,7 @@
 package com.checkskills.qcm.repository;
 
 import com.checkskills.qcm.model.*;
+import com.checkskills.qcm.model.custom.QcmHistoryLite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,17 +13,24 @@ import java.util.List;
 @Repository
 public interface QcmHistoryRepository  extends JpaRepository<QcmHistory, Long> {
 
+    QcmHistory findOneByCode(String code);
+
     List<QcmHistory> findByEmployer(User user);
 
 
-    @Query(value = "SELECT qcm_history.qcm_id, qcm_history.code, qcm_history.date_bought, qcm.title FROM checkskills.qcm_history LEFT JOIN qcm ON qcm_history.qcm_id = qcm.id  WHERE employer_id = :employer_id ORDER BY qcm_history.date_bought DESC", nativeQuery = true)
+    @Query(value = "SELECT qcm_history.qcm_id, qcm_history.id, qcm_history.code, qcm_history.date_bought, qcm_history.date_used, qcm.title, qcm_history.candidate_name, qcm_history.success, qcm_history.status FROM checkskills.qcm_history LEFT JOIN qcm ON qcm_history.qcm_id = qcm.id  WHERE employer_id = :employer_id ORDER BY qcm_history.date_bought DESC", nativeQuery = true)
     List<QcmHistoryOrder> findQcmHistoryOrder(@Param("employer_id") Long employer_id);
 
     public interface QcmHistoryOrder {
         Long getQcm_id();
+        Long getId();
         String getCode();
         Date getDate_bought();
+        Date getDate_used();
         String getTitle();
+        String getCandidate_name();
+        int getSuccess();
+        String getStatus();
     }
 
 }

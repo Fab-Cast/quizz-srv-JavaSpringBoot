@@ -37,8 +37,28 @@ public class QcmHistory {
 
     private String code;
 
+    private String candidate_name;
+
+    private long purchased_credits;
 
 
+
+
+    public String getCandidate_name() {
+        return candidate_name;
+    }
+
+    public void setCandidate_name(String candidate_name) {
+        this.candidate_name = candidate_name;
+    }
+
+    public long getPurchased_credits() {
+        return purchased_credits;
+    }
+
+    public void setPurchased_credits(long purchased_credits) {
+        this.purchased_credits = purchased_credits;
+    }
 
     public String getCode() {
         return code;

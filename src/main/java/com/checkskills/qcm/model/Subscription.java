@@ -3,6 +3,7 @@ package com.checkskills.qcm.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,12 +18,24 @@ public class Subscription {
     @JoinColumn(name = "plan_id")
     private Plan plan;
 
-
     @ManyToOne
     @JoinColumn(name = "employer_id")
     private User user;
 
     private Long credits_used;
+
+    @Column(name = "date_bought")
+    private Date dateBought;
+
+
+
+    public Date getDateBought() {
+        return dateBought;
+    }
+
+    public void setDateBought(Date dateBought) {
+        this.dateBought = dateBought;
+    }
 
     public Long getId() {
         return id;

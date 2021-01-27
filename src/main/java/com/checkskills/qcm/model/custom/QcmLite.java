@@ -1,5 +1,6 @@
 package com.checkskills.qcm.model.custom;
 
+import com.checkskills.qcm.model.QcmDifficulty;
 import com.checkskills.qcm.model.Sector;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ public class QcmLite {
     private Long id;
     private String title;
     private String description;
-    private int note;
+    private Float note;
     private Long credits;
     private boolean visible;
 
@@ -28,8 +29,20 @@ public class QcmLite {
             inverseJoinColumns = @JoinColumn(name = "sector_id"))
     private List<Sector> sectorList;
 
+    @Enumerated(EnumType.STRING)
+    private QcmDifficulty difficulty;
+
 
     // Getters & Setters
+
+
+    public QcmDifficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(QcmDifficulty difficulty) {
+        this.difficulty = difficulty;
+    }
 
     public Long getId() {
         return id;
@@ -55,11 +68,11 @@ public class QcmLite {
         this.description = description;
     }
 
-    public int getNote() {
+    public Float getNote() {
         return note;
     }
 
-    public void setNote(int note) {
+    public void setNote(Float note) {
         this.note = note;
     }
 

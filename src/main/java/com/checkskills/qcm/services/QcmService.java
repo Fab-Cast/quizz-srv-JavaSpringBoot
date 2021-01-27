@@ -11,10 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.text.DecimalFormat;
+import java.util.*;
+
+import static com.checkskills.qcm.model.QcmHistoryStatus.COMPLETE;
+import static com.checkskills.qcm.model.QcmHistoryStatus.UNUSED;
 
 @Service
 public class QcmService {
@@ -50,8 +52,6 @@ public class QcmService {
     }
 
     public Qcm getQcmById(Long id, User user) {
-
-        // TODO: Envoyer le qcm seulement quand un code acheteur est délivré
 
         Optional<Qcm> optionalQcm = qcmRepository.findById(id);
         if (optionalQcm.isPresent()){
@@ -89,27 +89,18 @@ public class QcmService {
 
     public ResponseEntity updateQcm(User user, Long id, Qcm qcm) {
 
-        // TODO: Si le qcm reçu est différent du qcm en base de données : on indente la colonne "version" de QCM.
-
         Optional<Qcm> qcmInDb = qcmRepository.findById(id);
 
-        if(qcmInDb.isPresent()) { // on vérifie que le qcm existe dans la db
-
-            Long authUserId = user.getId();
-            Long qcmDbUserId = qcmRepository.findById(id).get().getUser().getId();
-
-            if(authUserId != qcmDbUserId){ // si user identifié dans le qcm de la bdd != user authentifié
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'utilisateur propriétaire de ce QCM est différent de l'utilisateur authentifié");
-            }
+        if(qcmInDb.isPresent()) {
 
             try {
                 qcm.setId(id);
+                qcm.setNote(SetQcmNote(qcm));
                 qcmRepository.save(qcm);
                 return ResponseEntity.status(HttpStatus.OK).body(qcm);
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Problème à l'enregistrement du QCM");
             }
-
         }
 
         // Id qcm pas trouvé en db
@@ -117,51 +108,193 @@ public class QcmService {
 
     }
 
-    public ResponseEntity verifyQcm(Qcm qcm, String code) {
 
-        int totalWrong = 0;
+    public ResponseEntity cancelQcm(Map<String, Object> customQcm) {
 
-        Optional<Qcm> optionalQcm = qcmRepository.findById(qcm.getId());
+        Long qcmId = Long.valueOf(customQcm.get("id").toString());
 
-        if (optionalQcm.isPresent()){
-            Qcm dbQcm = optionalQcm.get();
-            List<Answer> answerList = new ArrayList<Answer>();
+        Optional<QcmHistory> qcmHistoryInDb = qcmHistoryRepository.findById(qcmId);
 
-            dbQcm.getQuestionList().forEach(q ->
-                    q.getAnswerList().forEach(a ->{
-                                answerList.add(a);
-                            }
-                    )
-            );
-
-            for (Question question : qcm.getQuestionList()) {
-                boolean wrongAnswer = false;
-                for (Answer answer : question.getAnswerList()) {
-                    for (Answer goodAnswer : answerList){
-                        if(answer.getId().equals(goodAnswer.getId())){
-                            if(answer.getCorrect() != goodAnswer.getCorrect()){
-                                wrongAnswer = true;
-                            }
-                        }
-                    }
-                }
-                Question dbQuestion = questionRepository.getOne(question.getId());
-                if(wrongAnswer == true){
-                    totalWrong = totalWrong +1 ;
-                    int totalFalse = dbQuestion.getTotalFalse();
-                    dbQuestion.setTotalFalse(totalFalse + 1 );
-                }else{
-                    int totalTrue = dbQuestion.getTotalTrue();
-                    dbQuestion.setTotalTrue(totalTrue + 1);
-                }
-                questionRepository.save(dbQuestion);
+        if(qcmHistoryInDb.isPresent()) {
+            if(qcmHistoryInDb.get().getStatus() == COMPLETE){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le passage du qcm est terminé");
             }
-
-            return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryService.saveCompletedQcm(dbQcm, totalWrong, code));
+            qcmHistoryInDb.get().setStatus(UNUSED);
+            qcmHistoryInDb.get().setCandidate_name(null);
+            qcmHistoryInDb.get().setDateUsed(null);
+            qcmHistoryRepository.save(qcmHistoryInDb.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Le qcm a bien été réinitialisé");
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("QCM pas trouvé");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("l'id de ce QCM n'a pas été trouvé en base de données");
 
     }
+
+
+    public Float SetQcmNote(Qcm qcm){
+
+        Float totalAllQNote = Float.valueOf(0);
+        int totalUnknown = 0;
+        for (Question question : qcm.getQuestionList()) {
+            int qNote = 5;
+            // Si on a pas assez de réponses, on met une note de "2" à la question
+            if(question.getTotalRight() + question.getTotalWrong() < 10){
+                qNote = 2;
+                totalUnknown ++;
+            }else{
+
+                // S'il y a trop de réponses fausses
+                if(question.getTotalRight() / question.getTotalWrong() <= 1.5){
+                    qNote = qNote -3;
+                }
+
+                // S'il y a trop de réponses justes (question trop facile)
+                if(question.getTotalRight() / question.getTotalWrong() > 4){
+                    qNote = qNote -3;
+                }
+
+                // Si l'utilisateur n'a pas répondu assez vite (total_no_time)
+                if(question.getTotalNoTime() != 0 && (question.getTotalRight() + question.getTotalWrong()) / question.getTotalNoTime() < 6){
+                    qNote = qNote -2;
+                }
+
+                // Si l'utilisateur a trop souvent utilisé un joker sur la question
+                if(question.getTotalJoker() != 0 && (question.getTotalRight() + question.getTotalWrong()) / question.getTotalJoker() < 6){
+                    qNote = qNote -2;
+                }
+
+
+                // Si la note est négative, on la bloque à 0
+                if(qNote<0){
+                    qNote = 0;
+                }
+
+            }
+
+
+            totalAllQNote = totalAllQNote + qNote;
+
+        }
+
+        // si plus de 10% des questions n'ont pas eu assez de réponses pour les comptabiliser, on attribue pas de note
+        if((totalUnknown * 100 / qcm.getQuestionList().size())>10){
+            return null;
+        }
+
+        // calcul de la note moyenne du Qcm
+        Float QcmGlobalNote = totalAllQNote / qcm.getQuestionList().size();
+
+        // Si il y a beaucoup de questions dans le QCM, on ajoute 1 point à la note moyenne du Qcm
+        if(qcm.getQuestionList().size() > 20){
+            QcmGlobalNote = QcmGlobalNote + 1;
+            if(QcmGlobalNote > 5){
+                QcmGlobalNote = Float.valueOf(5);
+            }
+        }
+
+
+
+        return QcmGlobalNote ;
+    }
+
+    public ResponseEntity saveCandidateQcmHistory(Map<String, Object> candidateQcm){
+
+        // todo: faire ça mieux, en mappant un vrai model...
+
+        int totalWrong = 0;
+        int totalQuestion = 0;
+
+        // récupère le code
+        String code = candidateQcm.get("code").toString();
+
+        // Récupère le QcmHistory associé au code envoyé
+        QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(code);
+
+        // Si le test est noté "UNUSED", c'est que son "Employer" a annulé le passage du test (cancelQcm)
+        if(qcmHistory.getStatus() == UNUSED){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Le propriétaire de ce QCM a annulé le passage du test");
+        }
+
+        // Crée une liste des questions récupérées
+        List<Question> questionList = qcmHistory.getQcm().getQuestionList();
+        List<Map<Object, Object>> candidateQuestionList = (ArrayList) candidateQcm.get("questionList");
+
+        List test = new ArrayList();
+        int test2 = 0;
+
+        // boucler sur les question récupérées
+        for (Map<Object, Object> candidateQuestion : candidateQuestionList) {
+            for(Question question : questionList) {
+
+
+
+                if(question.getId().toString().equals(candidateQuestion.get("questionId").toString())) {
+                    totalQuestion ++;
+                    int candidateTotalAnswerTrueLength = 0;
+                    int dbQuestionTotalAnswerTrueLength = 0;
+                    boolean oneisWrong = false;
+
+                    List<Integer> candidateAnswerList = (ArrayList) candidateQuestion.get("answerList");
+
+                    if(candidateQuestion.get("timeOut") != null && candidateQuestion.get("timeOut").equals(true)){
+                        question.setTotalNoTime(question.getTotalNoTime() +1);
+                        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                        System.out.println(candidateQuestion.get("timeOut"));
+                    }
+
+                    if(candidateQuestion.get("joker") != null && candidateQuestion.get("joker").equals(true)){
+                        question.setTotalJoker(question.getTotalJoker() +1);
+                        System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+                        System.out.println(candidateQuestion.get("joker"));
+                    }
+
+
+                    // si une réponse est fausse :
+                    for(Answer answer : question.getAnswerList()){
+                        if(answer.getCorrect() == true){
+                            dbQuestionTotalAnswerTrueLength ++;
+                        }
+                        for (Integer candidateAnswer : candidateAnswerList){
+                            if(answer.getId().toString().equals(candidateAnswer.toString())){
+                                candidateTotalAnswerTrueLength ++;
+                                if(answer.getCorrect() == false){
+                                    oneisWrong = true;
+                                }
+                            }
+
+                        }
+                    }
+
+                    // si toutes les bonnes réponses n'ont pas été cochées :
+                    if(oneisWrong == false && candidateTotalAnswerTrueLength != dbQuestionTotalAnswerTrueLength){
+                        oneisWrong = true;
+                    }
+
+                    if(oneisWrong){
+                        totalWrong ++;
+                        question.setTotalWrong(question.getTotalWrong() +1);
+                        // populer totalright / totalWrong / totalTimeout sur la question
+                    }else{
+                        question.setTotalRight(question.getTotalRight() +1);
+                    }
+
+                }
+            }
+        }
+
+        // recalculer la note globale du qcm et l'enregistrer en bdd
+        qcmHistory.getQcm().setNote(SetQcmNote(qcmHistory.getQcm()));
+
+
+        qcmHistory.setStatus(COMPLETE);
+        qcmHistory.setSuccess(100 * (totalQuestion - totalWrong) / totalQuestion);
+
+
+        qcmHistoryRepository.save(qcmHistory);
+
+        return ResponseEntity.status(HttpStatus.OK).body(qcmHistory);
+    }
+
+
 
 }

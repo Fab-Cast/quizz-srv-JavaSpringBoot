@@ -1,6 +1,8 @@
 package com.checkskills.qcm.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,7 +17,7 @@ public class Qcm {
 
     private String title;
     private String description;
-    private int note;
+    private Float note;
     private Long credits;
     private boolean visible;
 
@@ -23,8 +25,7 @@ public class Qcm {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "qcm", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "qcm", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
     @JsonManagedReference // Résoud le pb infinite recursive (objets dupliqués à l'infini dans la réponse)
     private List<Question> questionList;
 
@@ -89,11 +90,11 @@ public class Qcm {
 
     public void setDescription(String description) { this.description = description; }
 
-    public int getNote() {
+    public Float getNote() {
         return note;
     }
 
-    public void setNote(int note) {
+    public void setNote(Float note) {
         this.note = note;
     }
 
