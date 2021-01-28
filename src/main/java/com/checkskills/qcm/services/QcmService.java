@@ -203,6 +203,7 @@ public class QcmService {
 
         int totalWrong = 0;
         int totalQuestion = 0;
+        int totalJoker = 0;
 
         // récupère le code
         String code = candidateQcm.get("code").toString();
@@ -238,46 +239,43 @@ public class QcmService {
 
                     if(candidateQuestion.get("timeOut") != null && candidateQuestion.get("timeOut").equals(true)){
                         question.setTotalNoTime(question.getTotalNoTime() +1);
-                        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                        System.out.println(candidateQuestion.get("timeOut"));
                     }
 
                     if(candidateQuestion.get("joker") != null && candidateQuestion.get("joker").equals(true)){
+                        totalJoker ++;
                         question.setTotalJoker(question.getTotalJoker() +1);
-                        System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-                        System.out.println(candidateQuestion.get("joker"));
-                    }
 
+                    }else{ // si c'est pas un joker, on traîte la question :
 
-                    // si une réponse est fausse :
-                    for(Answer answer : question.getAnswerList()){
-                        if(answer.getCorrect() == true){
-                            dbQuestionTotalAnswerTrueLength ++;
-                        }
-                        for (Integer candidateAnswer : candidateAnswerList){
-                            if(answer.getId().toString().equals(candidateAnswer.toString())){
-                                candidateTotalAnswerTrueLength ++;
-                                if(answer.getCorrect() == false){
-                                    oneisWrong = true;
-                                }
+                        // si une réponse est fausse :
+                        for(Answer answer : question.getAnswerList()){
+                            if(answer.getCorrect() == true){
+                                dbQuestionTotalAnswerTrueLength ++;
                             }
+                            for (Integer candidateAnswer : candidateAnswerList){
+                                if(answer.getId().toString().equals(candidateAnswer.toString())){
+                                    candidateTotalAnswerTrueLength ++;
+                                    if(answer.getCorrect() == false){
+                                        oneisWrong = true;
+                                    }
+                                }
 
+                            }
+                        }
+
+                        // si toutes les bonnes réponses n'ont pas été cochées :
+                        if(oneisWrong == false && candidateTotalAnswerTrueLength != dbQuestionTotalAnswerTrueLength){
+                            oneisWrong = true;
+                        }
+
+                        if(oneisWrong){
+                            totalWrong ++;
+                            question.setTotalWrong(question.getTotalWrong() +1);
+                            // populer totalright / totalWrong / totalTimeout sur la question
+                        }else{
+                            question.setTotalRight(question.getTotalRight() +1);
                         }
                     }
-
-                    // si toutes les bonnes réponses n'ont pas été cochées :
-                    if(oneisWrong == false && candidateTotalAnswerTrueLength != dbQuestionTotalAnswerTrueLength){
-                        oneisWrong = true;
-                    }
-
-                    if(oneisWrong){
-                        totalWrong ++;
-                        question.setTotalWrong(question.getTotalWrong() +1);
-                        // populer totalright / totalWrong / totalTimeout sur la question
-                    }else{
-                        question.setTotalRight(question.getTotalRight() +1);
-                    }
-
                 }
             }
         }
@@ -287,7 +285,7 @@ public class QcmService {
 
 
         qcmHistory.setStatus(COMPLETE);
-        qcmHistory.setSuccess(100 * (totalQuestion - totalWrong) / totalQuestion);
+        qcmHistory.setSuccess(100 * ((totalQuestion-totalJoker) - totalWrong) / (totalQuestion-totalJoker));
 
 
         qcmHistoryRepository.save(qcmHistory);
