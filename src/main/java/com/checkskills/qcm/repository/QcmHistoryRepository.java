@@ -18,7 +18,7 @@ public interface QcmHistoryRepository  extends JpaRepository<QcmHistory, Long> {
     List<QcmHistory> findByEmployer(User user);
 
 
-    @Query(value = "SELECT qcm_history.qcm_id, qcm_history.id, qcm_history.code, qcm_history.date_bought, qcm_history.date_used, qcm.title, qcm_history.candidate_name, qcm_history.success, qcm_history.status FROM checkskills.qcm_history LEFT JOIN qcm ON qcm_history.qcm_id = qcm.id  WHERE employer_id = :employer_id ORDER BY qcm_history.date_bought DESC", nativeQuery = true)
+    @Query(value = "SELECT qcm_history.qcm_id, qcm_history.id, qcm_history.code, qcm_history.date_bought, qcm_history.date_used, qcm.title, qcm_history.candidate_name, qcm_history.success, qcm_history.status FROM checkskills.qcm_history LEFT JOIN qcm ON qcm_history.qcm_id = qcm.id  WHERE employer_id = :employer_id ORDER BY qcm_history.date_used DESC, qcm_history.date_bought DESC", nativeQuery = true)
     List<QcmHistoryOrder> findQcmHistoryOrder(@Param("employer_id") Long employer_id);
 
     public interface QcmHistoryOrder {
