@@ -66,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //todo : Voir comment configurer ça mieux
         //http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 
-        /*
+
         http.cors().and().csrf().disable().
                 authorizeRequests()
                 .antMatchers("/**").permitAll()
@@ -76,7 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-         */
+
 
 
     }
