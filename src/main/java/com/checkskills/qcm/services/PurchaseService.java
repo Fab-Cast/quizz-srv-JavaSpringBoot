@@ -42,14 +42,14 @@ public class PurchaseService {
         // si l'utilisateur a plus de crédits que le coût du qcm (si il peut se le payer)
         if(subscriptionRepository.totalCredit(user.getId()) >= qcm.getCredits()){
 
+            return ResponseEntity.status(HttpStatus.OK).body("AAAAAAAAAA");
+            /*
             List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
 
             Long toPay;
             toPay = qcm.getCredits();
 
-            return ResponseEntity.status(HttpStatus.LOCKED).body("AAAAAAAAAA");
 
-            /*
             for (int i = 0; i < userSubscriptionList.size(); i++) {
                 UserSubscriptionList sub = userSubscriptionList.get(i);
                 Long dispo = sub.getPlan_credits() - sub.getCredits_used();
