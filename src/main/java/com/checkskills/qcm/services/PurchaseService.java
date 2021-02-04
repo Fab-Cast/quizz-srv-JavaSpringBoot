@@ -35,7 +35,7 @@ public class PurchaseService {
     @Autowired
     private QcmHistoryRepository qcmHistoryRepository;
 
-    public ResponseEntity<?> purchaseQcm(Long qcmId, User user) {
+    public ResponseEntity purchaseQcm(Long qcmId, User user) {
 
         Qcm qcm = qcmService.getQcmById(qcmId, user);
 
