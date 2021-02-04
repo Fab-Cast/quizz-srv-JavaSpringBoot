@@ -23,6 +23,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     List<UserSubscriptionList> findAllUserSubscriptions(@Param("employer_id") Long employer_id);
 
 
+    /*
     public interface UserSubscriptionList {
         Long getId();
         Long getPlan_id();
@@ -30,6 +31,9 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
         Long getCredits_used();
         Long getPlan_credits();
     }
+
+     */
+
 
     List<Subscription> findByUserId(Long userId);
 

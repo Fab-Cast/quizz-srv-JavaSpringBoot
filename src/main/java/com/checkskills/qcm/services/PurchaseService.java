@@ -43,8 +43,6 @@ public class PurchaseService {
         if(subscriptionRepository.totalCredit(user.getId()) >= qcm.getCredits()){
 
             List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
-            return ResponseEntity.status(HttpStatus.OK).body("AAAAAAAAAA");
-            /*
 
             Long toPay;
             toPay = qcm.getCredits();
@@ -71,7 +69,7 @@ public class PurchaseService {
             qcmHistoryService.savePurchasedQcm(qcm, user);
 
             return ResponseEntity.status(HttpStatus.OK).body(userSubscriptionList);
-             */
+
         }else{
             return ResponseEntity.status(HttpStatus.LOCKED).body("insufficient credit");
         }

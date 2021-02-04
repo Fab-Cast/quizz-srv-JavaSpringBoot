@@ -29,6 +29,12 @@ public class SubscriptionService {
     }
 
     public List<UserSubscriptionList> getUserSubscriptionList(Long userId) {
+
+        List<UserSubscriptionList> userSubscriptionList = subscriptionRepository.findAllUserSubscriptions(userId);
+
+        return userSubscriptionList;
+
+        /*
         List<UserSubscriptionList> userSubscriptionList = subscriptionRepository.findAllUserSubscriptions(userId).stream().map(e -> {
 
             UserSubscriptionList dto = new UserSubscriptionList();
@@ -43,6 +49,8 @@ public class SubscriptionService {
         }).collect(Collectors.toList());
 
         return userSubscriptionList;
+
+         */
 
     }
 }
