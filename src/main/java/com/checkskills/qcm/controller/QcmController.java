@@ -2,6 +2,7 @@ package com.checkskills.qcm.controller;
 
 import com.checkskills.qcm.model.*;
 import com.checkskills.qcm.model.custom.QcmHistoryLite;
+import com.checkskills.qcm.model.custom.QcmHistoryOrder;
 import com.checkskills.qcm.model.custom.QcmLite;
 import com.checkskills.qcm.repository.QcmHistoryRepository;
 import com.checkskills.qcm.repository.QcmRepository;
@@ -111,7 +112,7 @@ public class QcmController {
     @GetMapping("/qcmLite/ordered")
     public ResponseEntity getOrderedQcmList(Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName());
-        List<QcmHistoryRepository.QcmHistoryOrder> qcmLiteList = qcmHistoryRepository.findQcmHistoryOrder(user.getId());
+        List<QcmHistoryOrder> qcmLiteList = qcmHistoryRepository.findQcmHistoryOrder(user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(qcmLiteList);
     }
 
