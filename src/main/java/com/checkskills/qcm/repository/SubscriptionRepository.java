@@ -19,8 +19,11 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Long totalCredit(@Param("employer_id") Long employer_id);
 
     // récupère les "subscriptions" de l'utilisateur sur lesquelles il reste des credits, et les ordonne pour avoir les plans "monthly" en premier
-    @Query(value = "SELECT subscription.id, subscription.plan_id, subscription.employer_id, subscription.credits_used, plan.credits as plan_credits FROM checkskills.subscription LEFT JOIN plan ON subscription.plan_id = plan.id WHERE employer_id = :employer_id AND (plan.credits - subscription.credits_used > 0) ORDER BY FIELD(plan.type, 'monthly', 'oneshot'), credits_used DESC", nativeQuery = true)
+    //@Query(value = "SELECT subscription.id, subscription.plan_id, subscription.employer_id, subscription.credits_used, plan.credits as plan_credits FROM checkskills.subscription LEFT JOIN plan ON subscription.plan_id = plan.id WHERE employer_id = :employer_id AND (plan.credits - subscription.credits_used > 0) ORDER BY FIELD(plan.type, 'monthly', 'oneshot'), credits_used DESC", nativeQuery = true)
+    @Query("SELECT new com.checkskills.qcm.model.custom.UserSubscriptionList(subscription.id, subscription.plan.id, subscription.user.id, subscription.credits_used, plan.credits)" + "from Subscription as subscription LEFT JOIN Plan as plan ON subscription.plan.id = plan.id WHERE subscription.user.id = :employer_id AND (plan.credits - subscription.credits_used > 0) ORDER BY plan.type, subscription.credits_used DESC")
     List<UserSubscriptionList> findAllUserSubscriptions(@Param("employer_id") Long employer_id);
+
+
 
 
     /*
