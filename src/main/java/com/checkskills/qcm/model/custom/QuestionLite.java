@@ -1,30 +1,30 @@
-package com.checkskills.qcm.model;
+package com.checkskills.qcm.model.custom;
 
+import com.checkskills.qcm.model.Qcm;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "answer")
-public class Answer {
+@Table(name = "question")
+public class QuestionLite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
-    private Boolean correct;
+
+    private int timeout;
 
     @ManyToOne
-    @JoinColumn(name = "question_id")
+    @JoinColumn(name = "qcm_id")
     @JsonBackReference
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Question question;
+    private Qcm qcm;
 
-
-    // Getters & Setters
 
     public Long getId() {
         return id;
@@ -42,19 +42,19 @@ public class Answer {
         this.title = title;
     }
 
-    public Boolean getCorrect() {
-        return correct;
+    public int getTimeout() {
+        return timeout;
     }
 
-    public void setCorrect(Boolean correct) {
-        this.correct = correct;
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
-    public Question getQuestion() {
-        return question;
+    public Qcm getQcm() {
+        return qcm;
     }
 
-    public void setQuestion(Question question) {
-        this.question = question;
+    public void setQcm(Qcm qcm) {
+        this.qcm = qcm;
     }
 }
