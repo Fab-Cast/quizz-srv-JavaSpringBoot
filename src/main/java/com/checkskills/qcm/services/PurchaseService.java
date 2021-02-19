@@ -38,11 +38,23 @@ public class PurchaseService {
     public ResponseEntity purchaseQcm(Long qcmId, User user) {
 
         Qcm qcm = qcmService.getQcmById(qcmId, user);
+        List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
+
+        // si le QCM est gratuit
+        if(qcm.getCredits() == 0){
+            qcmHistoryService.savePurchasedQcm(qcm, user);
+            return ResponseEntity.status(HttpStatus.OK).body(qcmId);
+        }
+
+        // si l'utilisateur n'a jamais souscrit à un plan
+        if(userSubscriptionList.size() == 0){
+            return ResponseEntity.status(HttpStatus.LOCKED).body("insufficient credit");
+        }
 
         // si l'utilisateur a plus de crédits que le coût du qcm (si il peut se le payer)
         if(subscriptionRepository.totalCredit(user.getId()) >= qcm.getCredits()){
 
-            List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
+            //List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
 
             Long toPay;
             toPay = qcm.getCredits();

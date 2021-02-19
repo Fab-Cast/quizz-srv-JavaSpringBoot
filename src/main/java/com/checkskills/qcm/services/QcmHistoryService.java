@@ -114,6 +114,13 @@ public class QcmHistoryService {
 
         List<QcmHistory> qcmHistoryList = qcmHistoryRepository.findAllByQcmId(qcmId);
 
+        // todo : refaire findAllByQcmId pour récupérer seulement les 'complete' et renvoyer le résultat que si il y en a assez (10)
+        /*
+        if(qcmHistoryList.size() < 15){
+            return new ArrayList<>();
+        }
+         */
+
         List<QcmHistoryAverage> allQcmHistoryList = new ArrayList();
 
         Integer percentValues[] = {10,20,30,40,50,60,70,80,90,100};

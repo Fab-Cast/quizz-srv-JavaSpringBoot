@@ -3,11 +3,13 @@ package com.checkskills.qcm.repository;
 import com.checkskills.qcm.model.*;
 import com.checkskills.qcm.model.custom.QcmHistoryLite;
 import com.checkskills.qcm.model.custom.QcmHistoryOrder;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +19,11 @@ public interface QcmHistoryRepository  extends JpaRepository<QcmHistory, Long> {
     QcmHistory findOneByCode(String code);
 
     List<QcmHistory> findAllByQcmId(Long id);
+
+    /*
+    @Query("SELECT new com.checkskills.qcm.model.QcmHistory(qcm_history.id, qcm_history.qcm, qcm_history.employer, qcm_history.success, qcm_history.dateUsed, qcm_history.dateBought, qcm_history.status, qcm_history.code, qcm_history.candidate_name, qcm_history.purchased_credits)" + "from QcmHistory as qcm_history WHERE qcm_history.status = 'COMPLETE' AND qcm_history.qcm = :id")
+    List<QcmHistory> findAllByQcmId(@Param("id") Long id);
+     */
 
     List<QcmHistory> findByEmployer(User user);
 

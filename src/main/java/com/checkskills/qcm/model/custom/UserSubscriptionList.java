@@ -3,10 +3,8 @@ package com.checkskills.qcm.model.custom;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
 public class UserSubscriptionList {
 
-    @Id
     private Long id;
     private Long plan_id;
     private Long employer_id;
@@ -21,8 +19,6 @@ public class UserSubscriptionList {
         this.credits_used = credits_used;
         this.plan_credits = plan_credits;
     }
-
-
 
     public Long getId() {
         return id;
