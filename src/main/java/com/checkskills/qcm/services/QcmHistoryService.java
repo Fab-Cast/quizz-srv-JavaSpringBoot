@@ -2,6 +2,7 @@ package com.checkskills.qcm.services;
 
 import com.checkskills.qcm.model.*;
 import com.checkskills.qcm.model.QcmHistoryStatus;
+import com.checkskills.qcm.model.custom.QcmHistoryAverage;
 import com.checkskills.qcm.model.custom.QcmHistoryLite;
 import com.checkskills.qcm.repository.QcmHistoryRepository;
 import com.checkskills.qcm.repository.QcmRepository;
@@ -15,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static com.checkskills.qcm.model.QcmHistoryStatus.COMPLETE;
 
 @Service
 public class QcmHistoryService {
@@ -70,6 +73,7 @@ public class QcmHistoryService {
             allQcmHistoryList.add(qcmHistoryLiteListById);
         }
         return allQcmHistoryList;
+
     }
 
     public ResponseEntity startRunningQcm(String code, String candidateName) {
@@ -104,6 +108,48 @@ public class QcmHistoryService {
 
         return ResponseEntity.status(HttpStatus.OK).body(idList);
 
+    }
+
+    public List<QcmHistoryAverage> getAverage(Long qcmId){
+
+        List<QcmHistory> qcmHistoryList = qcmHistoryRepository.findAllByQcmId(qcmId);
+
+        List<QcmHistoryAverage> allQcmHistoryList = new ArrayList();
+
+        Integer percentValues[] = {10,20,30,40,50,60,70,80,90,100};
+
+        List<String> qcmHistorySuccess = new ArrayList<String>();
+
+        for(QcmHistory qcmHistory : qcmHistoryList) {
+
+            if(qcmHistory.getStatus() == COMPLETE){
+                Long roundedSuccess = null;
+                // J'arrondis à la dizaine au dessus pour éviter d'avoir des valeurs à 0
+                // Ex : une note à 2% est affiché dans le groupe "10%
+                if(qcmHistory.getSuccess() != 100 && qcmHistory.getSuccess() >= Math.round(qcmHistory.getSuccess()/10.0) * 10){
+                    roundedSuccess = Math.round((qcmHistory.getSuccess()+10)/10.0) * 10;
+                }else{
+                    roundedSuccess = Math.round(qcmHistory.getSuccess()/10.0) * 10;
+                }
+
+                qcmHistorySuccess.add(roundedSuccess.toString());
+            }
+
+        }
+
+        for(Integer percentValue : percentValues) {
+
+            //int valueLength = Collections.frequency(Arrays.asList(qcmHistorySuccess), percentValue);
+            int valueLength = Collections.frequency(qcmHistorySuccess, percentValue.toString());;
+
+            QcmHistoryAverage average = new QcmHistoryAverage();
+            average.setPercentage(valueLength*100/qcmHistoryList.size());
+            average.setSuccessNote(percentValue);
+
+            allQcmHistoryList.add(average);
+        }
+
+        return allQcmHistoryList;
     }
 
 

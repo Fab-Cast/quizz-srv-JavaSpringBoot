@@ -1,6 +1,7 @@
 package com.checkskills.qcm.controller;
 
 import com.checkskills.qcm.model.*;
+import com.checkskills.qcm.model.custom.QcmHistoryAverage;
 import com.checkskills.qcm.model.custom.QcmHistoryLite;
 import com.checkskills.qcm.model.custom.QcmHistoryOrder;
 import com.checkskills.qcm.model.custom.QcmLite;
@@ -114,6 +115,12 @@ public class QcmController {
         User user = userRepository.findByUsername(authentication.getName());
         List<QcmHistoryOrder> qcmLiteList = qcmHistoryRepository.findQcmHistoryOrder(user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(qcmLiteList);
+    }
+
+    @GetMapping("/qcm/qcmHistoryAverage/{qcmId}")
+    public ResponseEntity getQcmHistoryAverage(@PathVariable Long qcmId) {
+        List<QcmHistoryAverage> qcmHistoryAverage = qcmHistoryService.getAverage(qcmId);
+        return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryAverage);
     }
 
     @PostMapping("/qcm")
