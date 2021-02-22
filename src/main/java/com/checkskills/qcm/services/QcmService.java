@@ -171,7 +171,6 @@ public class QcmService {
 
             }
 
-
             totalAllQNote = totalAllQNote + qNote;
 
         }
@@ -192,9 +191,7 @@ public class QcmService {
             }
         }
 
-
-
-        return QcmGlobalNote ;
+        return (float) Math.ceil(QcmGlobalNote * 2) / 2; // arrondi à 0.5
     }
 
     public ResponseEntity saveCandidateQcmHistory(Map<String, Object> candidateQcm){
