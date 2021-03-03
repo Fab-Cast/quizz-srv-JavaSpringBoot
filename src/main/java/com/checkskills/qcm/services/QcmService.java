@@ -41,7 +41,7 @@ public class QcmService {
         return qcmRepository.save(qcm);
     }
 
-    public List<QcmLite> findAllQcmLite() {
+    public List<QcmLite> findAllVisibleQcmLite() {
         return qcmLiteRepository.findByVisible(true);
     }
 

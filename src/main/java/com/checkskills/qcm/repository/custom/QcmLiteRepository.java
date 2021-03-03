@@ -3,7 +3,10 @@ package com.checkskills.qcm.repository.custom;
 import com.checkskills.qcm.model.Qcm;
 import com.checkskills.qcm.model.User;
 import com.checkskills.qcm.model.custom.QcmLite;
+import com.checkskills.qcm.model.custom.UserSubscriptionList;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,5 +18,9 @@ public interface QcmLiteRepository extends JpaRepository<QcmLite, Long> {
     //List<QcmLite> find();
 
     List<QcmLite> findByVisible(boolean visible);
+
+    //@Query("SELECT new com.checkskills.qcm.model.custom.QcmLite(q.id, q.title, q.description, q.note, q.credits, COUNT(h), q.visible, q.user, q.sectorList, q.difficulty)" + "from QcmLite as q LEFT JOIN QcmHistory as h ON q.id = h.qcm.id")
+    //List<QcmLite> findAll();
+
 
 }

@@ -56,8 +56,8 @@ public class QcmController {
     AuthenticationManager authenticationManager;
 
     @GetMapping("/qcmLite")
-    public ResponseEntity getAllQcmLite(){
-        List<QcmLite> qcmLiteList = qcmService.findAllQcmLite();
+    public ResponseEntity getAllVisibleQcmLite(){
+        List<QcmLite> qcmLiteList = qcmService.findAllVisibleQcmLite();
         return ResponseEntity.status(HttpStatus.OK).body(qcmLiteList);
     }
 

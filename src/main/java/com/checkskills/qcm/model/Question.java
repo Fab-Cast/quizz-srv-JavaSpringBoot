@@ -22,6 +22,7 @@ public class Question {
     private int timeout;
     private int totalNoTime;
     private int totalJoker;
+    private String picture;
 
     @ManyToOne
     @JoinColumn(name = "qcm_id")
@@ -36,6 +37,14 @@ public class Question {
 
     // getters & setters
 
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
 
     public int getTotalJoker() {
         return totalJoker;
