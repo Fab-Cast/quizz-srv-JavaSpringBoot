@@ -1,7 +1,7 @@
-package com.checkskills.qcm.model;
+package com.checkskills.qcm.model.custom;
 
+import com.checkskills.qcm.model.Question;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -9,22 +9,19 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "answer")
-public class Answer {
+public class AnswerLite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
-    private Boolean correct;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
     @JsonBackReference
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Question question;
-
-
-    // Getters & Setters
 
     public Long getId() {
         return id;
@@ -40,14 +37,6 @@ public class Answer {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Boolean getCorrect() {
-        return correct;
-    }
-
-    public void setCorrect(Boolean correct) {
-        this.correct = correct;
     }
 
     public Question getQuestion() {

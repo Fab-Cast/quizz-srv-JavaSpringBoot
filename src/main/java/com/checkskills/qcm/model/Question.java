@@ -2,6 +2,8 @@ package com.checkskills.qcm.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.List;
@@ -15,26 +17,50 @@ public class Question {
     private Long id;
 
     private String title;
-    private int note;
-    private int totalTrue;
-    private int totalFalse;
+    private int totalRight;
+    private int totalWrong;
     private int timeout;
-    private Boolean visible;
+    private int totalNoTime;
+    private int totalJoker;
+    private String picture;
 
     @ManyToOne
     @JoinColumn(name = "qcm_id")
     @JsonBackReference
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Qcm qcm;
 
-    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    //@OneToMany(cascade = {CascadeType.MERGE})
-    //@JoinColumn(name = "question_id")
+    @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval=true)
     @JsonManagedReference
     private List<Answer> answerList;
 
 
     // getters & setters
+
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    public int getTotalJoker() {
+        return totalJoker;
+    }
+
+    public void setTotalJoker(int totalJoker) {
+        this.totalJoker = totalJoker;
+    }
+
+    public int getTotalNoTime() {
+        return totalNoTime;
+    }
+
+    public void setTotalNoTime(int totalNoTime) {
+        this.totalNoTime = totalNoTime;
+    }
 
     public Long getId() {
         return id;
@@ -52,28 +78,20 @@ public class Question {
         this.title = title;
     }
 
-    public int getNote() {
-        return note;
+    public int getTotalRight() {
+        return totalRight;
     }
 
-    public void setNote(int note) {
-        this.note = note;
+    public void setTotalRight(int totalTrue) {
+        this.totalRight = totalTrue;
     }
 
-    public int getTotalTrue() {
-        return totalTrue;
+    public int getTotalWrong() {
+        return totalWrong;
     }
 
-    public void setTotalTrue(int totalTrue) {
-        this.totalTrue = totalTrue;
-    }
-
-    public int getTotalFalse() {
-        return totalFalse;
-    }
-
-    public void setTotalFalse(int totalFalse) {
-        this.totalFalse = totalFalse;
+    public void setTotalWrong(int totalFalse) {
+        this.totalWrong = totalFalse;
     }
 
     public int getTimeout() {
@@ -82,14 +100,6 @@ public class Question {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-
-    public Boolean getVisible() {
-        return visible;
-    }
-
-    public void setVisible(Boolean visible) {
-        this.visible = visible;
     }
 
     public Qcm getQcm() {
