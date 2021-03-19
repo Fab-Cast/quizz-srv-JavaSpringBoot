@@ -29,6 +29,9 @@ public class QcmHistory {
     @Column(name = "date_used")
     private Date dateUsed;
 
+    @Column(name = "date_invited")
+    private Date dateInvited;
+
     @Column(name = "date_bought")
     private Date dateBought;
 
@@ -42,7 +45,13 @@ public class QcmHistory {
     private long purchased_credits;
 
 
+    public Date getDateInvited() {
+        return dateInvited;
+    }
 
+    public void setDateInvited(Date dateInvited) {
+        this.dateInvited = dateInvited;
+    }
 
     public String getCandidate_name() {
         return candidate_name;

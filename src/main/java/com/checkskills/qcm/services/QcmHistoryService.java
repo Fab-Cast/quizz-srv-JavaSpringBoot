@@ -2,6 +2,7 @@ package com.checkskills.qcm.services;
 
 import com.checkskills.qcm.model.*;
 import com.checkskills.qcm.model.QcmHistoryStatus;
+import com.checkskills.qcm.model.custom.CodeCandidateAssociation;
 import com.checkskills.qcm.model.custom.QcmHistoryAverage;
 import com.checkskills.qcm.model.custom.QcmHistoryLite;
 import com.checkskills.qcm.repository.QcmHistoryRepository;
@@ -13,8 +14,14 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.util.*;
 
 import static com.checkskills.qcm.model.QcmHistoryStatus.COMPLETE;
@@ -79,8 +86,15 @@ public class QcmHistoryService {
     public ResponseEntity startRunningQcm(String code, String candidateName) {
 
         QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(code);
+
         if(qcmHistory == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Code introuvable");
+        }
+        System.out.println(qcmHistory.getCandidate_name());
+        System.out.println(candidateName);
+
+        if(!qcmHistory.getCandidate_name().equals(candidateName)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ce code a été attribué à un autre candidat");
         }
 
         if(qcmHistory.getStatus() == QcmHistoryStatus.COMPLETE){
@@ -103,7 +117,7 @@ public class QcmHistoryService {
 
         qcmHistory.setStatus(QcmHistoryStatus.RUNNING);
         qcmHistory.setDateUsed(new Date());
-        qcmHistory.setCandidate_name(candidateName);
+        //qcmHistory.setCandidate_name(candidateName);
         qcmHistoryRepository.save(qcmHistory);
 
         return ResponseEntity.status(HttpStatus.OK).body(idList);
@@ -157,6 +171,76 @@ public class QcmHistoryService {
         }
 
         return allQcmHistoryList;
+    }
+
+
+    public ResponseEntity setCodeCandidateNameAssociation(CodeCandidateAssociation codeAssociation){
+
+        QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(codeAssociation.getCode());
+        qcmHistory.setCandidate_name(codeAssociation.getCandidate());
+        qcmHistory.setStatus(QcmHistoryStatus.INVITED);
+        qcmHistory.setDateInvited(new Date());
+        qcmHistoryRepository.save(qcmHistory);
+        return ResponseEntity.status(HttpStatus.OK).body(codeAssociation);
+    }
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    void sendEmail(Mail mail) throws MessagingException, IOException {
+
+        MimeMessage msg = javaMailSender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(msg);
+
+        helper.setTo(mail.getEmail());
+        helper.setSubject(mail.getObject());
+        helper.setText(mail.getBody(), true);
+
+        javaMailSender.send(msg);
+
+        /*
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setTo("fabiche@gmail.com", "f.castagnet@gmail.com");
+
+        msg.setSubject("-------> Testing from Spring Boot");
+        msg.setText("Hello World \n Spring Boot Email \n <h1>Titre 1 ?</h1>");
+
+        javaMailSender.send(msg);
+
+         */
+
+    }
+
+
+    public ResponseEntity sendMailList(List<Mail> mailList){
+
+
+        for(Mail mail : mailList) {
+
+            try {
+                CodeCandidateAssociation codeAssociation = new CodeCandidateAssociation();
+                codeAssociation.setCandidate(mail.getEmail());
+                codeAssociation.setCode(mail.getCode());
+                setCodeCandidateNameAssociation(codeAssociation);
+                sendEmail(mail);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(mailList);
+    }
+
+    public ResponseEntity removeCodeCandidateAssociation(String code){
+        QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(code);
+        qcmHistory.setCandidate_name(null);
+        qcmHistory.setStatus(QcmHistoryStatus.UNUSED);
+        qcmHistory.setDateInvited(null);
+        qcmHistoryRepository.save(qcmHistory);
+        return ResponseEntity.status(HttpStatus.OK).body(qcmHistory);
     }
 
 
