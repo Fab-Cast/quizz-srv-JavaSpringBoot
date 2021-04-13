@@ -83,17 +83,15 @@ public class QcmHistoryService {
 
     }
 
-    public ResponseEntity startRunningQcm(String code, String candidateName) {
+    public ResponseEntity startRunningQcm(String code, String candidateMail) {
 
         QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(code);
 
         if(qcmHistory == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Code introuvable");
         }
-        System.out.println(qcmHistory.getCandidate_name());
-        System.out.println(candidateName);
 
-        if(!qcmHistory.getCandidate_name().equals(candidateName)) {
+        if(!qcmHistory.getCandidate_mail().equals(candidateMail)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ce code a été attribué à un autre candidat");
         }
 
@@ -177,7 +175,8 @@ public class QcmHistoryService {
     public ResponseEntity setCodeCandidateNameAssociation(CodeCandidateAssociation codeAssociation){
 
         QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(codeAssociation.getCode());
-        qcmHistory.setCandidate_name(codeAssociation.getCandidate());
+        qcmHistory.setCandidate_mail(codeAssociation.getCandidate_mail());
+        qcmHistory.setCandidate_name(codeAssociation.getCandidate_name());
         qcmHistory.setStatus(QcmHistoryStatus.INVITED);
         qcmHistory.setDateInvited(new Date());
         qcmHistoryRepository.save(qcmHistory);
@@ -199,17 +198,6 @@ public class QcmHistoryService {
 
         javaMailSender.send(msg);
 
-        /*
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo("fabiche@gmail.com", "f.castagnet@gmail.com");
-
-        msg.setSubject("-------> Testing from Spring Boot");
-        msg.setText("Hello World \n Spring Boot Email \n <h1>Titre 1 ?</h1>");
-
-        javaMailSender.send(msg);
-
-         */
-
     }
 
 
@@ -220,7 +208,8 @@ public class QcmHistoryService {
 
             try {
                 CodeCandidateAssociation codeAssociation = new CodeCandidateAssociation();
-                codeAssociation.setCandidate(mail.getEmail());
+                codeAssociation.setCandidate_mail(mail.getEmail());
+                codeAssociation.setCandidate_name(mail.getCandidate_name());
                 codeAssociation.setCode(mail.getCode());
                 setCodeCandidateNameAssociation(codeAssociation);
                 sendEmail(mail);
@@ -237,6 +226,7 @@ public class QcmHistoryService {
     public ResponseEntity removeCodeCandidateAssociation(String code){
         QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(code);
         qcmHistory.setCandidate_name(null);
+        qcmHistory.setCandidate_mail(null);
         qcmHistory.setStatus(QcmHistoryStatus.UNUSED);
         qcmHistory.setDateInvited(null);
         qcmHistoryRepository.save(qcmHistory);

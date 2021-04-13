@@ -3,8 +3,17 @@ package com.checkskills.qcm.model;
 public class Mail {
     String code;
     String email;
+    String candidate_name;
     String body;
     String object;
+
+    public String getCandidate_name() {
+        return candidate_name;
+    }
+
+    public void setCandidate_name(String candidate_name) {
+        this.candidate_name = candidate_name;
+    }
 
     public String getCode() {
         return code;

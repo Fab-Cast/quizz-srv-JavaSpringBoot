@@ -74,18 +74,9 @@ public class QcmController {
         return ResponseEntity.status(HttpStatus.OK).body(qcm);
     }
 
-    /*
-    @GetMapping("/qcm/code/{code}")
-    public ResponseEntity getQcmByCode(@PathVariable(value = "code") String code) {
-        //return qcmHistoryService.getQcmToRun(code);
-        return qcmHistoryService.getIdList(code);
-    }
-    */
-
-
     @PostMapping("/qcm/code/{code}")
-    public ResponseEntity getQcmByCode(@PathVariable(value = "code") String code, @RequestBody String candidateName){
-        return qcmHistoryService.startRunningQcm(code, candidateName);
+    public ResponseEntity getQcmByCode(@PathVariable(value = "code") String code, @RequestBody String candidateMail){
+        return qcmHistoryService.startRunningQcm(code, candidateMail);
     }
 
     @PostMapping("/qcm/code-name-association")

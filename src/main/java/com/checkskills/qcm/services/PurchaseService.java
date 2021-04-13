@@ -35,14 +35,16 @@ public class PurchaseService {
     @Autowired
     private QcmHistoryRepository qcmHistoryRepository;
 
-    public ResponseEntity purchaseQcm(Long qcmId, User user) {
+    public ResponseEntity purchaseQcm(Long qcmId, int qty, User user) {
 
         Qcm qcm = qcmService.getQcmById(qcmId, user);
         List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
 
         // si le QCM est gratuit
         if(qcm.getCredits() == 0){
-            qcmHistoryService.savePurchasedQcm(qcm, user);
+            for (int i = 0; i < qty; i++){
+                qcmHistoryService.savePurchasedQcm(qcm, user);
+            }
             return ResponseEntity.status(HttpStatus.OK).body(qcmId);
         }
 
@@ -52,33 +54,41 @@ public class PurchaseService {
         }
 
         // si l'utilisateur a plus de crédits que le coût du qcm (si il peut se le payer)
-        if(subscriptionRepository.totalCredit(user.getId()) >= qcm.getCredits()){
+        Long toPay;
+        toPay = qcm.getCredits()*qty;
+        if(subscriptionRepository.totalCredit(user.getId()) >= toPay){
 
-            //List<UserSubscriptionList> userSubscriptionList = subscriptionService.getUserSubscriptionList(user.getId());
-
-            Long toPay;
-            toPay = qcm.getCredits();
-
-
+            // On débite les Sub
             for (int i = 0; i < userSubscriptionList.size(); i++) {
+
+                System.out.println(userSubscriptionList.get(i).getCredits_used());
+
                 UserSubscriptionList sub = userSubscriptionList.get(i);
-                Long dispo = sub.getPlan_credits() - sub.getCredits_used();
+
+                Long dispo = sub.getPlan_credits() - sub.getCredits_used(); // dispo = crédits dispo sur ce Sub
 
                 Optional<Subscription> obtionalSubToSave = subscriptionRepository.findById(sub.getId());
-                Subscription subToSave = obtionalSubToSave.get();
+                Subscription subToSave = obtionalSubToSave.get(); // récupération du Sub dans la bdd
 
-                if(qcm.getCredits()<= dispo){
-                    subToSave.setCredits_used(subToSave.getCredits_used() + toPay);
+                if(toPay>=dispo){ // Si le montant à payer mange tout le crédit du Sub, on le remplit et on le sauvegarde
+                    subToSave.setCredits_used(sub.getPlan_credits());
                     subscriptionRepository.save(subToSave);
-                    break;
+                    toPay = toPay-dispo;
+
                 }else{
-                    toPay = qcm.getCredits() - (sub.getPlan_credits() - sub.getCredits_used());
-                    subToSave.setCredits_used(sub.getPlan_credits()); // tout est consommé sur ce sub
-                    subscriptionRepository.save(subToSave);
+                    subToSave.setCredits_used(subToSave.getCredits_used() + toPay);
+                    toPay = toPay-toPay;
                 }
+
+                System.out.println(userSubscriptionList.get(i).getCredits_used());
+                System.out.println("---------------------");
+
             }
 
-            qcmHistoryService.savePurchasedQcm(qcm, user);
+            // on génère les QCMHist
+            for (int j = 0; j < qty; j++){
+                qcmHistoryService.savePurchasedQcm(qcm, user);
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(userSubscriptionList);
 

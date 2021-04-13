@@ -25,12 +25,12 @@ public class PurchaseController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/purchase/{qcmId}")
+    @PostMapping("/purchase/{qcmId}/{qty}")
     @PreAuthorize("hasRole('EMPLOYER')")
-    public ResponseEntity purchase(@PathVariable(value = "qcmId") Long qcmId, Authentication authentication){
+    public ResponseEntity purchase(@PathVariable(value = "qcmId") Long qcmId, @PathVariable(value = "qty") int qty, Authentication authentication){
 
         User user = userRepository.findByUsername(authentication.getName());
-        ResponseEntity response = purchaseService.purchaseQcm(qcmId, user);
+        ResponseEntity response = purchaseService.purchaseQcm(qcmId, qty, user);
 
         return response;
 

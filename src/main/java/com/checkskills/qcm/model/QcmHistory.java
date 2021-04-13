@@ -42,8 +42,18 @@ public class QcmHistory {
 
     private String candidate_name;
 
+    private String candidate_mail;
+
     private long purchased_credits;
 
+
+    public String getCandidate_mail() {
+        return candidate_mail;
+    }
+
+    public void setCandidate_mail(String candidate_mail) {
+        this.candidate_mail = candidate_mail;
+    }
 
     public Date getDateInvited() {
         return dateInvited;
