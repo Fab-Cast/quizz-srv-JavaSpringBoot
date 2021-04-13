@@ -1,17 +1,13 @@
 package com.checkskills.qcm.controller;
 
 import com.checkskills.qcm.model.*;
-import com.checkskills.qcm.model.custom.QcmHistoryAverage;
-import com.checkskills.qcm.model.custom.QcmHistoryLite;
-import com.checkskills.qcm.model.custom.QcmHistoryOrder;
-import com.checkskills.qcm.model.custom.QcmLite;
+import com.checkskills.qcm.model.custom.*;
 import com.checkskills.qcm.repository.QcmHistoryRepository;
 import com.checkskills.qcm.repository.QcmRepository;
 import com.checkskills.qcm.repository.UserRepository;
 import com.checkskills.qcm.repository.custom.QcmLiteRepository;
 import com.checkskills.qcm.services.QcmHistoryService;
 import com.checkskills.qcm.services.QcmService;
-import org.hibernate.mapping.Any;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +19,7 @@ import org.springframework.security.core.Authentication;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -81,18 +74,28 @@ public class QcmController {
         return ResponseEntity.status(HttpStatus.OK).body(qcm);
     }
 
-    /*
-    @GetMapping("/qcm/code/{code}")
-    public ResponseEntity getQcmByCode(@PathVariable(value = "code") String code) {
-        //return qcmHistoryService.getQcmToRun(code);
-        return qcmHistoryService.getIdList(code);
-    }
-    */
-
-
     @PostMapping("/qcm/code/{code}")
-    public ResponseEntity getQcmByCode(@PathVariable(value = "code") String code, @RequestBody String candidateName){
-        return qcmHistoryService.startRunningQcm(code, candidateName);
+    public ResponseEntity getQcmByCode(@PathVariable(value = "code") String code, @RequestBody String candidateMail){
+        return qcmHistoryService.startRunningQcm(code, candidateMail);
+    }
+
+    @PostMapping("/qcm/code-name-association")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity codeCandidateNameAssociation(@RequestBody CodeCandidateAssociation codeAssociation){
+        return qcmHistoryService.setCodeCandidateNameAssociation(codeAssociation);
+    }
+
+    @PostMapping("/qcm/send-mail-list")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity codeCandidateMailAssociation(@RequestBody List<Mail> maillist){
+        return qcmHistoryService.sendMailList(maillist);
+    }
+
+    @DeleteMapping(value = "/qcm/code-name-association/{code}")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity deleteCodeCandidateAssociation(@PathVariable String code) {
+        ResponseEntity response = qcmHistoryService.removeCodeCandidateAssociation(code);
+        return response;
     }
 
     @GetMapping("/qcm/get-author-qcm-list")
@@ -114,6 +117,13 @@ public class QcmController {
     public ResponseEntity getOrderedQcmList(Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName());
         List<QcmHistoryOrder> qcmLiteList = qcmHistoryRepository.findQcmHistoryOrder(user.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(qcmLiteList);
+    }
+
+    @GetMapping("/qcmLite/ordered/{qcmId}")
+    public ResponseEntity getOrderedQcmListByQcmId(@PathVariable Long qcmId, Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName());
+        List<QcmHistoryOrder> qcmLiteList = qcmHistoryRepository.findQcmHistoryOrderByQcmId(qcmId, user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(qcmLiteList);
     }
 

@@ -15,24 +15,43 @@ public class QcmHistoryOrder {
     private String code;
     private Date date_bought;
     private Date date_used;
+    private Date date_invited;
     private String title;
     private String candidate_name;
+    private String candidate_mail;
     private int success;
     private QcmHistoryStatus status;
 
 
-    public QcmHistoryOrder(Long id,Long qcm_id,String code,Date date_bought,Date date_used,String title,String candidate_name,int success,QcmHistoryStatus status){
+    public QcmHistoryOrder(Long id,Long qcm_id,String code,Date date_bought,Date date_used,Date date_invited,String title,String candidate_name,String candidate_mail,int success,QcmHistoryStatus status){
         this.id = id;
         this.qcm_id = qcm_id;
         this.code = code;
         this.date_bought = date_bought;
         this.date_used = date_used;
+        this.date_invited = date_invited;
         this.title = title;
         this.candidate_name = candidate_name;
+        this.candidate_mail = candidate_mail;
         this.success = success;
         this.status = status;
     }
 
+    public String getCandidate_mail() {
+        return candidate_mail;
+    }
+
+    public void setCandidate_mail(String candidate_mail) {
+        this.candidate_mail = candidate_mail;
+    }
+
+    public Date getDate_invited() {
+        return date_invited;
+    }
+
+    public void setDate_invited(Date date_invited) {
+        this.date_invited = date_invited;
+    }
 
     public Long getId() {
         return id;

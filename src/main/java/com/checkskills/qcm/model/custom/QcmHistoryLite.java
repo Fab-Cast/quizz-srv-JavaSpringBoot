@@ -27,11 +27,19 @@ public class QcmHistoryLite {
     @Column(name = "date_bought")
     private Date dateBought;
 
+    @Column(name = "date_invited")
+    private Date dateInvited;
+
     private long purchased_credits;
 
 
+    public Date getDateInvited() {
+        return dateInvited;
+    }
 
-
+    public void setDateInvited(Date dateInvited) {
+        this.dateInvited = dateInvited;
+    }
 
     public Long getId() {
         return id;
