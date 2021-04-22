@@ -1,10 +1,13 @@
 package com.checkskills.qcm.services;
 
 import com.checkskills.qcm.model.*;
+import com.checkskills.qcm.model.custom.QcmDetail;
 import com.checkskills.qcm.model.custom.QcmLite;
+import com.checkskills.qcm.model.custom.UserLite;
 import com.checkskills.qcm.repository.QcmHistoryRepository;
 import com.checkskills.qcm.repository.QcmRepository;
 import com.checkskills.qcm.repository.QuestionRepository;
+import com.checkskills.qcm.repository.UserRepository;
 import com.checkskills.qcm.repository.custom.QcmLiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +39,9 @@ public class QcmService {
     @Autowired
     private QcmHistoryService qcmHistoryService;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public Qcm saveQcm(User user, Qcm qcm) {
         qcm.setUser(user);
         return qcmRepository.save(qcm);
@@ -46,6 +52,57 @@ public class QcmService {
     }
 
     public Optional<QcmLite> findQcmLite(Long id) {return qcmLiteRepository.findById(id); }
+
+    public QcmDetail findQcmDetail(Long id) {
+
+        Optional<Qcm> optionalQcm = qcmRepository.findById(id);
+        QcmDetail qcmDetail = new QcmDetail();
+
+        if (optionalQcm.isPresent()){
+
+            Qcm qcm = optionalQcm.get();
+            Optional<User> optionalUser = userRepository.findById(qcm.getUser().getId());
+            UserLite userLite = new UserLite();
+
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
+                userLite.setEmail(user.getEmail());
+                userLite.setId(user.getId());
+                userLite.setDescription(user.getDescription());
+                userLite.setUsername(user.getUsername());
+                userLite.setPicture(user.getPicture());
+            }
+
+            List<QcmHistory> qcmHistoryList = new ArrayList<>();
+            Integer durationTotal = 0;
+
+            for(QcmHistory qcmHistory : qcmHistoryRepository.findAllByQcmId(qcm.getId())){
+                if(qcmHistory.getStatus() == COMPLETE){
+                    qcmHistoryList.add(qcmHistory);
+                    durationTotal = durationTotal + qcmHistory.getDuration();
+                }
+            }
+
+            qcmDetail.setId(qcm.getId());
+            qcmDetail.setCredits(qcm.getCredits());
+            qcmDetail.setDescription(qcm.getDescription());
+            qcmDetail.setDetail(qcm.getDetail());
+            qcmDetail.setDifficulty(qcm.getDifficulty());
+            if(qcmHistoryList.size() > 0){
+                qcmDetail.setDurationAverage(durationTotal / qcmHistoryList.size());
+            }
+            qcmDetail.setNote(qcm.getNote());
+            qcmDetail.setQuestionLength(qcm.getQuestionList().size());
+            qcmDetail.setSectorList(qcm.getSectorList());
+            qcmDetail.setTitle(qcm.getTitle());
+            qcmDetail.setUsedLength(qcmHistoryList.size());
+            qcmDetail.setVisible(qcm.isVisible());
+            qcmDetail.setUser(userLite);
+
+        }
+
+        return qcmDetail;
+    }
 
     public List<Qcm> findAllQcm() {
         return qcmRepository.findAll();
@@ -205,6 +262,10 @@ public class QcmService {
         // récupère le code
         String code = candidateQcm.get("code").toString();
 
+
+        // récupère la durée
+        Integer duration = (Integer) candidateQcm.get("duration");
+
         // Récupère le QcmHistory associé au code envoyé
         QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(code);
 
@@ -282,6 +343,7 @@ public class QcmService {
 
 
         qcmHistory.setStatus(COMPLETE);
+        qcmHistory.setDuration(duration);
         qcmHistory.setSuccess(100 * ((totalQuestion-totalJoker) - totalWrong) / (totalQuestion-totalJoker));
 
 

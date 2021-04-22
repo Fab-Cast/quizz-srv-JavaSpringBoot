@@ -26,6 +26,8 @@ public class QcmHistory {
 
     private int success;
 
+    private Integer duration;
+
     @Column(name = "date_used")
     private Date dateUsed;
 
@@ -125,6 +127,14 @@ public class QcmHistory {
 
     public void setSuccess(int success) {
         this.success = success;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     public Date getDateUsed() {

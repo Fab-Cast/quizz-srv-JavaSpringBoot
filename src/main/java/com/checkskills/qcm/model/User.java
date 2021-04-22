@@ -32,6 +32,8 @@ public class User{
     @Size(min=3, max = 50)
     private String username;
 
+    private String description;
+
     @NaturalId
     @NotBlank
     @Size(max = 50)
@@ -56,6 +58,14 @@ public class User{
         this.username = username;
         this.email = email;
         this.password = password;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Long getId() {

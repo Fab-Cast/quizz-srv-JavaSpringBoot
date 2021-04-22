@@ -60,6 +60,12 @@ public class QcmController {
         return ResponseEntity.status(HttpStatus.OK).body(qcmLite);
     }
 
+    @GetMapping("/qcm/details/{id}")
+    public ResponseEntity getQcmDetailsById(@PathVariable(value = "id") Long id) {
+        QcmDetail qcmDetail = qcmService.findQcmDetail(id);
+        return ResponseEntity.status(HttpStatus.OK).body(qcmDetail);
+    }
+
     @GetMapping("/qcm")
     public ResponseEntity getAllQcm(){
         List<Qcm> qcmList = qcmService.findAllQcm();

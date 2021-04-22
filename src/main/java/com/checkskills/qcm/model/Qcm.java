@@ -17,6 +17,7 @@ public class Qcm {
 
     private String title;
     private String description;
+    private String detail;
     private Float note;
     private Long credits;
     private boolean visible;
@@ -39,8 +40,16 @@ public class Qcm {
     private QcmDifficulty difficulty;
 
 
-// getters & setters
+    // getters & setters
 
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
 
     public boolean isVisible() {
         return visible;

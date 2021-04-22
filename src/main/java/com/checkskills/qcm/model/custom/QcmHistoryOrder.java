@@ -20,10 +20,11 @@ public class QcmHistoryOrder {
     private String candidate_name;
     private String candidate_mail;
     private int success;
+    private Integer duration;
     private QcmHistoryStatus status;
 
 
-    public QcmHistoryOrder(Long id,Long qcm_id,String code,Date date_bought,Date date_used,Date date_invited,String title,String candidate_name,String candidate_mail,int success,QcmHistoryStatus status){
+    public QcmHistoryOrder(Long id,Long qcm_id,String code,Date date_bought,Date date_used,Date date_invited,String title,String candidate_name,String candidate_mail,int success,Integer duration,QcmHistoryStatus status){
         this.id = id;
         this.qcm_id = qcm_id;
         this.code = code;
@@ -34,7 +35,16 @@ public class QcmHistoryOrder {
         this.candidate_name = candidate_name;
         this.candidate_mail = candidate_mail;
         this.success = success;
+        this.duration = duration;
         this.status = status;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
     public String getCandidate_mail() {

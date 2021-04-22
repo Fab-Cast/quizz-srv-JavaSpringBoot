@@ -35,4 +35,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+    @PostMapping("/user/description")
+    public ResponseEntity saveQcm(@RequestBody String description, Authentication authentication){
+        User user = userRepository.findByUsername(authentication.getName());
+        if(description != null){
+            user.setDescription(description);
+        }
+        userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
 }

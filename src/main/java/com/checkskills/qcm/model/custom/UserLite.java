@@ -20,12 +20,32 @@ public class UserLite {
     @Size(min=3, max = 50)
     private String username;
 
+    private String description;
+
     @NaturalId
     @NotBlank
     @Size(max = 50)
     @Email
     private String email;
 
+    private byte[] picture;
+
+
+    public byte[] getPicture() {
+        return picture;
+    }
+
+    public void setPicture(byte[] picture) {
+        this.picture = picture;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Long getId() {
         return id;
