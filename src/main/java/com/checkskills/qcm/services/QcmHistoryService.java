@@ -124,14 +124,16 @@ public class QcmHistoryService {
 
     public List<QcmHistoryAverage> getAverage(Long qcmId){
 
-        List<QcmHistory> qcmHistoryList = qcmHistoryRepository.findAllByQcmId(qcmId);
-
+        // Garder les "complete"
         // todo : refaire findAllByQcmId pour récupérer seulement les 'complete' et renvoyer le résultat que si il y en a assez (10)
-        /*
-        if(qcmHistoryList.size() < 15){
-            return new ArrayList<>();
+        List<QcmHistory> qcmHistoryList = qcmHistoryRepository.findAllByQcmId(qcmId);
+        List<QcmHistory> qcmHistoryFilterCompleteList = new ArrayList<>();
+        for(QcmHistory qcmHistory : qcmHistoryList){
+            if(qcmHistory.getStatus() == COMPLETE){
+                qcmHistoryFilterCompleteList.add(qcmHistory);
+            }
         }
-         */
+
 
         List<QcmHistoryAverage> allQcmHistoryList = new ArrayList();
 
@@ -139,34 +141,32 @@ public class QcmHistoryService {
 
         List<String> qcmHistorySuccess = new ArrayList<String>();
 
-        for(QcmHistory qcmHistory : qcmHistoryList) {
+        for(QcmHistory qcmHistoryComplete : qcmHistoryFilterCompleteList) {
 
-            if(qcmHistory.getStatus() == COMPLETE){
-                Long roundedSuccess = null;
-                // J'arrondis à la dizaine au dessus pour éviter d'avoir des valeurs à 0
-                // Ex : une note à 2% est affiché dans le groupe "10%
-                if(qcmHistory.getSuccess() != 100 && qcmHistory.getSuccess() >= Math.round(qcmHistory.getSuccess()/10.0) * 10){
-                    roundedSuccess = Math.round((qcmHistory.getSuccess()+10)/10.0) * 10;
-                }else{
-                    roundedSuccess = Math.round(qcmHistory.getSuccess()/10.0) * 10;
-                }
-
-                qcmHistorySuccess.add(roundedSuccess.toString());
+            Long roundedSuccess = null;
+            // J'arrondis à la dizaine au dessus pour éviter d'avoir des valeurs à 0
+            // Ex : une note à 2% est affiché dans le groupe "10%"
+            if(qcmHistoryComplete.getSuccess() != 100 && qcmHistoryComplete.getSuccess() >= Math.round(qcmHistoryComplete.getSuccess()/10.0) * 10){
+                roundedSuccess = Math.round((qcmHistoryComplete.getSuccess()+10)/10.0) * 10;
+            }else{
+                roundedSuccess = Math.round(qcmHistoryComplete.getSuccess()/10.0) * 10;
             }
+
+            qcmHistorySuccess.add(roundedSuccess.toString()); // toutes les notes des candidats arrondies à la dizaine au dessus
 
         }
 
         for(Integer percentValue : percentValues) {
 
-            //int valueLength = Collections.frequency(Arrays.asList(qcmHistorySuccess), percentValue);
-            int valueLength = Collections.frequency(qcmHistorySuccess, percentValue.toString());;
+            int valueLength = Collections.frequency(qcmHistorySuccess, percentValue.toString()); // combien de candidats ont eu la node "80% / 70% / 60% ..."
 
             QcmHistoryAverage average = new QcmHistoryAverage();
-            average.setPercentage(valueLength*100/qcmHistoryList.size());
+            average.setPercentage(valueLength * 100 / qcmHistorySuccess.size()); // (PB : on tombe pas à 100 pile...) pourcentage des candidats qui sont dans cette tranche.
             average.setSuccessNote(percentValue);
 
             allQcmHistoryList.add(average);
         }
+
 
         return allQcmHistoryList;
     }

@@ -45,7 +45,7 @@ public class SubscriptionController {
     @PreAuthorize("hasRole('EMPLOYER')")
     public ResponseEntity getCurrentAuthSubscriptionList(Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName());
-        List<Subscription> subscriptionList = subscriptionRepository.findByUserId(user.getId());
+        List<Subscription> subscriptionList = subscriptionRepository.findByUserIdOrderByDateBoughtDesc(user.getId());
         return ResponseEntity.status(HttpStatus.OK).body(subscriptionList);
     }
 

@@ -23,21 +23,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query("SELECT new com.checkskills.qcm.model.custom.UserSubscriptionList(subscription.id, subscription.plan.id, subscription.user.id, subscription.credits_used, plan.credits)" + "from Subscription as subscription LEFT JOIN Plan as plan ON subscription.plan.id = plan.id WHERE subscription.user.id = :employer_id AND (plan.credits - subscription.credits_used > 0) ORDER BY plan.type, subscription.credits_used DESC")
     List<UserSubscriptionList> findAllUserSubscriptions(@Param("employer_id") Long employer_id);
 
-
-
-
-    /*
-    public interface UserSubscriptionList {
-        Long getId();
-        Long getPlan_id();
-        Long getEmployer_id();
-        Long getCredits_used();
-        Long getPlan_credits();
-    }
-
-     */
-
-
-    List<Subscription> findByUserId(Long userId);
+    List<Subscription> findByUserIdOrderByDateBoughtDesc(Long userId);
 
 }
