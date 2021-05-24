@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("/user/picture")
-    public ResponseEntity saveQcm(@RequestBody byte[] picByte, Authentication authentication){
+    public ResponseEntity saveQcm(@RequestBody(required = false) byte[] picByte, Authentication authentication){
         User user = userRepository.findByUsername(authentication.getName());
         user.setPicture(picByte);
         userRepository.save(user);
@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/user/description")
-    public ResponseEntity saveQcm(@RequestBody String description, Authentication authentication){
+    public ResponseEntity saveDescription(@RequestBody(required = false) String description, Authentication authentication){
         User user = userRepository.findByUsername(authentication.getName());
         if(description != null){
             user.setDescription(description);
