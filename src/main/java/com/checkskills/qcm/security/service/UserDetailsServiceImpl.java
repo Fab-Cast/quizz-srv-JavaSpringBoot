@@ -35,14 +35,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public void updateResetPasswordToken(String token, String email) throws UsernameNotFoundException {
 
-        System.out.println("-----------------------------------------token");
-        System.out.println(token);
         User user = userRepository.findByEmail(email);
         if (user != null) {
             user.setResetPasswordToken(token);
             userRepository.save(user);
         } else {
-            throw new UsernameNotFoundException("Could not find any customer with the email " + email);
+            throw new UsernameNotFoundException("Aucun utilisateur trouvé avec cette adresse : " + email);
         }
     }
 

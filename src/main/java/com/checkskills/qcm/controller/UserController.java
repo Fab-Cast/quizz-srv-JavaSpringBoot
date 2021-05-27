@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -66,24 +67,48 @@ public class UserController {
     @PostMapping("user/forgot_password")
     public ResponseEntity processForgotPassword(@RequestBody(required = false) String email) throws IOException, MessagingException {
         String token = RandomString.make(30);
-        userDetailsService.updateResetPasswordToken(token, email);
-        sendEmail(email, token);
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        try{
+            userDetailsService.updateResetPasswordToken(token, email);
+            sendEmail(email, token);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
     }
-
-
 
     void sendEmail(String email, String token) throws MessagingException, IOException {
 
         MimeMessage msg = javaMailSender.createMimeMessage();
-
         MimeMessageHelper helper = new MimeMessageHelper(msg);
 
         helper.setTo(email);
         helper.setSubject("Jungle Skills : Mot de passe oublié");
-        helper.setText("<h3>Veuillez redéfinir un mot de passe en suivant ce lien :</h3></br><a href='https://qcm-tests.herokuapp.com/api/user/reset_password/"+token+"'> https://qcm-tests.herokuapp.com/api/user/reset_password/</a>", true);
+        helper.setText("<h3>Veuillez redéfinir un mot de passe en suivant ce lien :</h3></br><a href='https://qcm-tests-front-prod.herokuapp.com/reset-password/"+token+"'> https://qcm-tests.herokuapp.com/api/user/reset_password/</a>", true);
 
         javaMailSender.send(msg);
+
+    }
+
+    @PostMapping("user/reset_password")
+    public ResponseEntity processResetPassword(@RequestBody Map<String, Object> data) {
+
+        String token = data.get("token").toString();
+        String password = data.get("password").toString();
+
+        System.out.println("----------------------token");
+        System.out.println(token);
+        System.out.println("----------------------password");
+        System.out.println(password);
+
+        User user = userDetailsService.getByResetPasswordToken(token);
+
+        if (user != null) {
+            userDetailsService.updatePassword(user, password);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur introuvable");
+        }
+
 
     }
 
