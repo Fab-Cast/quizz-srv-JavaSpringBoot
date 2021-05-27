@@ -83,7 +83,7 @@ public class UserController {
 
         helper.setTo(email);
         helper.setSubject("Jungle Skills : Mot de passe oublié");
-        helper.setText("<h3>Veuillez redéfinir un mot de passe en suivant ce lien :</h3></br><a href='https://qcm-tests-front-prod.herokuapp.com/reset-password/"+token+"'> https://qcm-tests.herokuapp.com/api/user/reset_password/</a>", true);
+        helper.setText("<h3>Veuillez redéfinir un mot de passe en suivant ce lien :</h3></br><a href='https://qcm-tests-front-prod.herokuapp.com/reset-password/"+token+"'> https://qcm-tests-front-prod.herokuapp.com/reset-password/</a>", true);
 
         javaMailSender.send(msg);
 
