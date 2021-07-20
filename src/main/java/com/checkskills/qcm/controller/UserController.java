@@ -95,11 +95,6 @@ public class UserController {
         String token = data.get("token").toString();
         String password = data.get("password").toString();
 
-        System.out.println("----------------------token");
-        System.out.println(token);
-        System.out.println("----------------------password");
-        System.out.println(password);
-
         User user = userDetailsService.getByResetPasswordToken(token);
 
         if (user != null) {
