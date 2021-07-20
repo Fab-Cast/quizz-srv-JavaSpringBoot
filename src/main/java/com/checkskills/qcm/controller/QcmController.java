@@ -112,6 +112,7 @@ public class QcmController {
         Map<String, Object> result = new HashMap<String,Object>();
         List<Qcm> qcmList = qcmRepository.findAllByUser(user.getId());
         List<List<QcmHistoryLite>> allQcmHistorylist = qcmHistoryService.getUserQcmHistory(qcmList);
+        //  List<QcmHistoryLite> userQcmHistoryList = qcmHistoryRepository.findAllByUser()
 
         result.put("qcmList",qcmList);
         result.put("qcmHistoryArrayList",allQcmHistorylist);
