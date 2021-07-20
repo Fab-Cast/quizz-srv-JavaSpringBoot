@@ -44,6 +44,9 @@ public class User{
     @Size(min=6, max = 100)
     private String password;
 
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -115,5 +118,13 @@ public class User{
 
     public void setPicture(byte[] picture) {
         this.picture = picture;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
     }
 }
