@@ -5,6 +5,7 @@ import com.checkskills.qcm.model.QcmHistoryStatus;
 import com.checkskills.qcm.model.custom.CodeCandidateAssociation;
 import com.checkskills.qcm.model.custom.QcmHistoryAverage;
 import com.checkskills.qcm.model.custom.QcmHistoryLite;
+import com.checkskills.qcm.model.custom.QcmHistoryTotalPurchased;
 import com.checkskills.qcm.repository.QcmHistoryRepository;
 import com.checkskills.qcm.repository.QcmRepository;
 import com.checkskills.qcm.repository.custom.QcmHistoryLiteRepository;
@@ -72,14 +73,20 @@ public class QcmHistoryService {
         return ResponseEntity.status(HttpStatus.OK).body(qcmHistoryRepository.save(qcmHistory));
     }
 
-    public List<List<QcmHistoryLite>> getUserQcmHistory(List<Qcm> qcmList){
+    public List<QcmHistoryTotalPurchased> getQcmHistoryTotalPurchased(List<Qcm> qcmList){
 
-        List<List<QcmHistoryLite>> allQcmHistoryList = new ArrayList();
+        //List<List<QcmHistoryLite>> allQcmHistoryList = new ArrayList();
+        List<QcmHistoryTotalPurchased> QHTPList = new ArrayList<>();
         for(Qcm qcm : qcmList) {
+            QcmHistoryTotalPurchased QHTP = new QcmHistoryTotalPurchased();
             List<QcmHistoryLite> qcmHistoryLiteListById = qcmHistoryLiteRepository.findAllByQcmId(qcm.getId());
-            allQcmHistoryList.add(qcmHistoryLiteListById);
+            long sum = qcmHistoryLiteListById.stream().mapToLong(o->o.getPurchased_credits()).sum();
+            QHTP.setQcmId(qcm.getId());
+            QHTP.setTotal_purchased_credits(sum);
+            QHTP.setTotal_ordered(qcmHistoryLiteListById.size());
+            QHTPList.add(QHTP);
         }
-        return allQcmHistoryList;
+        return QHTPList;
 
     }
 
