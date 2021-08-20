@@ -83,6 +83,9 @@ public class QcmService {
                 }
             }
 
+            List<QcmLite> qcmLiteList = qcmLiteRepository.findByUser(userLite);
+
+            qcmDetail.setQcmLiteList(qcmLiteList);
             qcmDetail.setId(qcm.getId());
             qcmDetail.setCredits(qcm.getCredits());
             qcmDetail.setDescription(qcm.getDescription());

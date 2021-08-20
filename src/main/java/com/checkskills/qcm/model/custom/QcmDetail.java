@@ -20,6 +20,7 @@ public class QcmDetail {
     Integer questionLength;
     Integer usedLength;
     Integer durationAverage;
+    List <QcmLite> qcmLiteList;
 
     public String getDetail() {
         return detail;
@@ -123,5 +124,13 @@ public class QcmDetail {
 
     public void setDurationAverage(Integer durationAverage) {
         this.durationAverage = durationAverage;
+    }
+
+    public List<QcmLite> getQcmLiteList() {
+        return qcmLiteList;
+    }
+
+    public void setQcmLiteList(List<QcmLite> qcmLiteList) {
+        this.qcmLiteList = qcmLiteList;
     }
 }
