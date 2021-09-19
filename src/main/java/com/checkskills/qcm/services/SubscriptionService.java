@@ -7,10 +7,16 @@ import com.checkskills.qcm.model.User;
 import com.checkskills.qcm.model.custom.UserSubscriptionList;
 import com.checkskills.qcm.repository.PlanRepository;
 import com.checkskills.qcm.repository.SubscriptionRepository;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,13 +25,35 @@ public class SubscriptionService {
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    private PlanRepository planRepository;
+
+    @Autowired
+    private SubscriptionService subscriptionService;
+
+    @Autowired
+    private StripeService stripeService;
+
     public List<Subscription> findAllSubscription() {
         return subscriptionRepository.findAll();
     }
 
-    public Subscription saveSubscription(User user, Subscription subscription) {
-        subscription.setUser(user);
-        return subscriptionRepository.save(subscription);
+    public ResponseEntity saveSubscription(PaymentIntent paymentIntent, Long planId, User user) throws StripeException {
+
+
+        if(stripeService.hasPaid(paymentIntent)){
+            Optional<Plan> plan = planRepository.findById(planId);
+            Subscription sub = new Subscription();
+            sub.setUser(user);
+            sub.setPlan(plan.get());
+            sub.setCredits_used((long) 0);
+            sub.setDateBought(new Date());
+            Subscription subscriptionSaved = subscriptionRepository.save(sub);
+            return ResponseEntity.status(HttpStatus.OK).body(subscriptionSaved);
+        }else{
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(null);
+        }
+
     }
 
     public List<UserSubscriptionList> getUserSubscriptionList(Long userId) {
