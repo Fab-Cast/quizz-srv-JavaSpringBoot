@@ -1,13 +1,14 @@
 package com.checkskills.qcm.controller;
 
-import com.checkskills.qcm.model.Plan;
-import com.checkskills.qcm.model.Qcm;
-import com.checkskills.qcm.model.Subscription;
-import com.checkskills.qcm.model.User;
+import com.checkskills.qcm.model.*;
 import com.checkskills.qcm.repository.PlanRepository;
 import com.checkskills.qcm.repository.SubscriptionRepository;
 import com.checkskills.qcm.repository.UserRepository;
+import com.checkskills.qcm.services.StripeService;
 import com.checkskills.qcm.services.SubscriptionService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
+import com.stripe.model.PaymentIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -35,6 +35,13 @@ public class SubscriptionController {
     @Autowired
     private PlanRepository planRepository;
 
+    private StripeService stripeService;
+
+    @Autowired
+    SubscriptionController(StripeService stripeService) {
+        this.stripeService = stripeService;
+    }
+
     @GetMapping("/subscription")
     public ResponseEntity getAllSubscription(){
         List<Subscription> subscriptionList = subscriptionService.findAllSubscription();
@@ -51,19 +58,16 @@ public class SubscriptionController {
 
     @PostMapping("/subscription/{planId}")
     @PreAuthorize("hasRole('EMPLOYER')")
-    public ResponseEntity saveSubscription(@PathVariable Long planId, Authentication authentication){
+    public ResponseEntity saveSubscription(@RequestBody PaymentIntent paymentIntent, @PathVariable Long planId, Authentication authentication) throws StripeException {
         User user = userRepository.findByUsername(authentication.getName());
-        //Optional<Plan> plan = planService.findById(planId);
-
-        Optional<Plan> plan = planRepository.findById(planId);
-
-        Subscription sub = new Subscription();
-        sub.setUser(user);
-        sub.setPlan(plan.get());
-        sub.setCredits_used((long) 0);
-        sub.setDateBought(new Date());
-
-        Subscription subscriptionSaved = subscriptionService.saveSubscription(user, sub);
-        return ResponseEntity.status(HttpStatus.OK).body(sub);
+        return subscriptionService.saveSubscription(paymentIntent, planId, user);
     }
+
+    @PostMapping("/checkout/{planId}")
+    public ResponseEntity checkout(@PathVariable Long planId) throws Exception {
+        return stripeService.createPayment(planId);
+    }
+
+
+
 }
