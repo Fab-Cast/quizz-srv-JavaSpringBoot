@@ -97,6 +97,12 @@ public class QcmController {
         return qcmHistoryService.sendMailList(maillist);
     }
 
+    @PostMapping("/qcm/send-multiple-code")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity codeCandidateMailAssociation(@RequestBody Mail maillist){
+        return qcmHistoryService.sendMultipleCode(maillist);
+    }
+
     @DeleteMapping(value = "/qcm/code-name-association/{code}")
     @PreAuthorize("hasRole('EMPLOYER')")
     public ResponseEntity deleteCodeCandidateAssociation(@PathVariable String code) {

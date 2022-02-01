@@ -1,7 +1,9 @@
 package com.checkskills.qcm.model;
 
+import java.util.List;
+
 public class Mail {
-    String code;
+    List<String> codeList;
     String email;
     String candidate_name;
     String body;
@@ -15,12 +17,12 @@ public class Mail {
         this.candidate_name = candidate_name;
     }
 
-    public String getCode() {
-        return code;
+    public List<String> getCodeList() {
+        return codeList;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setCodeList(List<String> codeList) {
+        this.codeList = codeList;
     }
 
     public String getEmail() {

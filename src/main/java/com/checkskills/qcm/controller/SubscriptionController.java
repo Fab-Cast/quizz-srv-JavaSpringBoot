@@ -64,8 +64,10 @@ public class SubscriptionController {
     }
 
     @PostMapping("/checkout/{planId}")
-    public ResponseEntity checkout(@PathVariable Long planId) throws Exception {
-        return stripeService.createPayment(planId);
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity checkout(@PathVariable Long planId, Authentication authentication) throws Exception {
+        User user = userRepository.findByUsername(authentication.getName());
+        return stripeService.createPayment(planId, user);
     }
 
 

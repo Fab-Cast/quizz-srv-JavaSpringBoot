@@ -207,7 +207,6 @@ public class QcmHistoryService {
 
     }
 
-
     public ResponseEntity sendMailList(List<Mail> mailList){
 
 
@@ -217,7 +216,7 @@ public class QcmHistoryService {
                 CodeCandidateAssociation codeAssociation = new CodeCandidateAssociation();
                 codeAssociation.setCandidate_mail(mail.getEmail());
                 codeAssociation.setCandidate_name(mail.getCandidate_name());
-                codeAssociation.setCode(mail.getCode());
+                codeAssociation.setCode(mail.getCodeList().get(0));
                 setCodeCandidateNameAssociation(codeAssociation);
                 sendEmail(mail);
             } catch (MessagingException e) {
@@ -229,6 +228,27 @@ public class QcmHistoryService {
 
         return ResponseEntity.status(HttpStatus.OK).body(mailList);
     }
+
+    public ResponseEntity sendMultipleCode(Mail mail){
+
+        try {
+            for(String code : mail.getCodeList()){
+                CodeCandidateAssociation codeAssociation = new CodeCandidateAssociation();
+                codeAssociation.setCandidate_mail(mail.getEmail());
+                codeAssociation.setCandidate_name(mail.getCandidate_name());
+                codeAssociation.setCode(code);
+                setCodeCandidateNameAssociation(codeAssociation);
+            }
+            sendEmail(mail);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(mail);
+    }
+
 
     public ResponseEntity removeCodeCandidateAssociation(String code){
         QcmHistory qcmHistory = qcmHistoryRepository.findOneByCode(code);

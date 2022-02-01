@@ -191,10 +191,15 @@ public class QcmService {
     }
 
 
+
     public Float SetQcmNote(Qcm qcm){
 
         Float totalAllQNote = Float.valueOf(0);
         int totalUnknown = 0;
+        if(qcm.getQuestionList().size() == 0){
+            return null;
+        }
+
         for (Question question : qcm.getQuestionList()) {
             int qNote = 5;
             // Si on a pas assez de réponses, on met une note de "2" à la question

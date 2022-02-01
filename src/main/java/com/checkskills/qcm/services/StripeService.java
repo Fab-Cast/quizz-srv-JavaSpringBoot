@@ -2,6 +2,8 @@ package com.checkskills.qcm.services;
 
 import com.checkskills.qcm.model.Plan;
 import com.checkskills.qcm.model.Qcm;
+import com.checkskills.qcm.model.Role;
+import com.checkskills.qcm.model.User;
 import com.checkskills.qcm.model.custom.QcmHistoryTotalPurchased;
 import com.checkskills.qcm.repository.PlanRepository;
 import com.stripe.Stripe;
@@ -52,8 +54,12 @@ public class StripeService {
     }
     */
 
-    public ResponseEntity createPayment(Long planId) throws StripeException {
+    public ResponseEntity createPayment(Long planId, User user) throws StripeException {
 
+
+        if(!user.getRoles().stream().findFirst().get().getName().toString().equals("ROLE_EMPLOYER")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(user.getRoles().stream().findFirst());
+        }
 
         Stripe.apiKey = stripeApiKey;
         Optional<Plan> plan = planRepository.findById(planId);
