@@ -57,9 +57,7 @@ public class UserController {
     @PostMapping("/user/description")
     public ResponseEntity saveDescription(@RequestBody(required = false) String description, Authentication authentication){
         User user = userRepository.findByUsername(authentication.getName());
-        if(description != null){
-            user.setDescription(description);
-        }
+        user.setDescription(description);
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
