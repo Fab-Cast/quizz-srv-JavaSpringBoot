@@ -16,6 +16,7 @@ public class QcmLite {
     private String title;
     private String description;
     private Float note;
+    private Float popularity;
     private Long credits;
     private boolean visible;
 
@@ -34,15 +35,6 @@ public class QcmLite {
 
 
     // Getters & Setters
-
-
-    public QcmDifficulty getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(QcmDifficulty difficulty) {
-        this.difficulty = difficulty;
-    }
 
     public Long getId() {
         return id;
@@ -76,6 +68,14 @@ public class QcmLite {
         this.note = note;
     }
 
+    public Float getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(Float popularity) {
+        this.popularity = popularity;
+    }
+
     public Long getCredits() {
         return credits;
     }
@@ -106,5 +106,13 @@ public class QcmLite {
 
     public void setSectorList(List<Sector> sectorList) {
         this.sectorList = sectorList;
+    }
+
+    public QcmDifficulty getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(QcmDifficulty difficulty) {
+        this.difficulty = difficulty;
     }
 }

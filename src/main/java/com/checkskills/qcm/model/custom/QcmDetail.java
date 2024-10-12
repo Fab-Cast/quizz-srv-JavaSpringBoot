@@ -12,6 +12,7 @@ public class QcmDetail {
     String description;
     String detail;
     Float note;
+    Float popularity;
     Long credits;
     boolean visible;
     UserLite user;
@@ -60,6 +61,14 @@ public class QcmDetail {
 
     public void setNote(Float note) {
         this.note = note;
+    }
+
+    public Float getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(Float popularity) {
+        this.popularity = popularity;
     }
 
     public Long getCredits() {

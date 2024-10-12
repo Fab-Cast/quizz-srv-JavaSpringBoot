@@ -10,6 +10,9 @@ import com.checkskills.qcm.repository.QuestionRepository;
 import com.checkskills.qcm.repository.UserRepository;
 import com.checkskills.qcm.repository.custom.QcmLiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -95,6 +98,7 @@ public class QcmService {
                 qcmDetail.setDurationAverage(durationTotal / qcmHistoryList.size());
             }
             qcmDetail.setNote(qcm.getNote());
+            qcmDetail.setPopularity(qcm.getPopularity());
             qcmDetail.setQuestionLength(qcm.getQuestionList().size());
             qcmDetail.setSectorList(qcm.getSectorList());
             qcmDetail.setTitle(qcm.getTitle());
@@ -156,6 +160,7 @@ public class QcmService {
             try {
                 qcm.setId(id);
                 qcm.setNote(SetQcmNote(qcm));
+                qcm.setPopularity(SetQcmPopularity(qcm));
                 qcmRepository.save(qcm);
                 return ResponseEntity.status(HttpStatus.OK).body(qcm);
             } catch (Exception e) {
@@ -166,6 +171,25 @@ public class QcmService {
         // Id qcm pas trouvé en db
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("l'id de ce QCM n'a pas été trouvé en base de données");
 
+    }
+
+    public void updateQcmPopularity() {
+
+        // Pour la popularité, je prend les 500 derniers qcmHistory et je retourne le nombre de fois que le QCM apparaît
+
+        Pageable limit = PageRequest.of(0,500);
+        Page<QcmHistory> qcmHistoryPage = qcmHistoryRepository.findAll(limit);
+
+        for (Qcm qcm : qcmRepository.findAll()){
+            int total = 0;
+            for (QcmHistory qcmH : qcmHistoryPage){
+                if(qcmH.getQcm().getId() == qcm.getId()){
+                    total ++ ;
+                }
+            }
+            qcm.setPopularity((float) total);
+            qcmRepository.save(qcm);
+        }
     }
 
 
@@ -191,6 +215,22 @@ public class QcmService {
     }
 
 
+
+    public Float SetQcmPopularity(Qcm qcm){
+
+        List<QcmHistory> qcmHistoryList = new ArrayList<>();
+
+        for(QcmHistory qcmHistory : qcmHistoryRepository.findAllByQcmId(qcm.getId())){
+            qcmHistoryList.add(qcmHistory);
+        }
+
+        if(qcmHistoryList.size() > 0) {
+            return (float) qcmHistoryList.size();
+        }else{
+            return null;
+        }
+
+    }
 
     public Float SetQcmNote(Qcm qcm){
 
@@ -349,6 +389,8 @@ public class QcmService {
         // recalculer la note globale du qcm et l'enregistrer en bdd
         qcmHistory.getQcm().setNote(SetQcmNote(qcmHistory.getQcm()));
 
+        // recalculer la popularité
+
 
         qcmHistory.setStatus(COMPLETE);
         qcmHistory.setDuration(duration);
@@ -359,7 +401,5 @@ public class QcmService {
 
         return ResponseEntity.status(HttpStatus.OK).body(qcmHistory);
     }
-
-
 
 }
