@@ -33,7 +33,8 @@ public class QcmApplication {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
-		config.setAllowedOrigins(Arrays.asList("https://jungle-skills-front.herokuapp.com"));
+//		config.setAllowedOrigins(Arrays.asList("https://jungle-skills-front.herokuapp.com"));
+		config.setAllowedOrigins(Collections.singletonList("*"));
 		config.setAllowedMethods(Collections.singletonList("*"));
 		config.setAllowedHeaders(Collections.singletonList("*"));
 		source.registerCorsConfiguration("/**", config);
