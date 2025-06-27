@@ -42,6 +42,8 @@ public class UserController {
     @GetMapping("/user/current-auth/")
     @PreAuthorize("hasRole('EMPLOYER') or hasRole('AUTHOR') or hasRole('ADMIN')")
     public ResponseEntity getCurrentAuthUser(Authentication authentication) {
+        System.out.println("---authentication");
+        System.out.println(authentication);
         User user = userRepository.findByUsername(authentication.getName());
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
